@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test</title>
+  <script type="text/javascript" src="../bower_components/angular/angular.js"></script>
+  <script type="text/javascript" src="../build/angular-tagger.js"></script>
+  <script type="text/javascript">
+    angular.module("testapp", ["tagger"])
+    angular.module("testapp").controller("TestCtrl", function($scope){
+      $scope.tags = ["angular", "bower"]
+    })
+  </script>
+  <link rel="stylesheet" type="text/css" href="../src/angular-tagger.css"/>
+  <style type="text/css">
+    body { font: 10px "Lucida Grande";}
+  </style>
+</head>
+<body ng-app="testapp">
+  <div ng-controller="TestCtrl">
+    <tagger ng-model="tags"></tagger>
+    <pre>{{ tags | json }}</pre>
+  </div>
+</body>
+</html>

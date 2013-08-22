@@ -1,0 +1,15 @@
+{
+  "name": "angular-tagger",
+  "version": "0.1.0",
+  "authors": [
+    "Tymon Tobolski <tymon.tobolski@monterail.com>"
+  ],
+  "repository": "git://github.com/monterail/angular-tagger.git",
+  "description": "Input for tagging",
+  "main": "build/angular-tagger.js",
+  "dependencies": {
+    "angular": "~1.0.7"
+  },
+  "license": "MIT",
+  "homepage": "http://github.com/monterail/angular-tagger"
+}
