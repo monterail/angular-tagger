@@ -1,0 +1,46 @@
+.angular-tagger {
+  border: 1px solid #ccc;
+  padding: 5px;
+  height: 20px;
+  line-height: 20px;
+  position: relative;
+}
+.angular-tagger_tag {
+  background: red;
+  padding: 5px;
+  margin: 5px;
+  color: white;
+}
+.angular-tagger_tag_remove {
+  cursor: pointer;
+}
+.angular-tagger_input {
+  border: none;
+  background: none;
+  outline: none;
+  width: auto;
+}
+.angular-tagger_matching {
+  position: absolute;
+  width: 300px;
+  top: 30px;
+  left: -1;
+  border: 1px solid #eee;
+  padding: 0;
+  margin: 0;
+  background: #fff;
+}
+.angular-tagger_matching_item {
+  list-style: none;
+  padding: 0 5px;
+  background: #fff;
+}
+.angular-tagger_matching_item_new {
+  list-style: none;
+  padding: 0 5px;
+  background: #fff;
+}
+.angular-tagger_matching_item_selected {
+  background: #09f;
+  color: #fff;
+}

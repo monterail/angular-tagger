@@ -7,17 +7,18 @@
   <script type="text/javascript">
     angular.module("testapp", ["tagger"])
     angular.module("testapp").controller("TestCtrl", function($scope){
-      $scope.tags = ["angular", "bower"]
+      $scope.options = ["Text", "Markdown", "HTML", "PHP", "Python", "Java", "JavaScript", "Ruby", "VHDL", "Verilog", "C#", "C/C++"]
+      $scope.tags = ["Markdown", "Ruby"]
     })
   </script>
   <link rel="stylesheet" type="text/css" href="../src/angular-tagger.css"/>
   <style type="text/css">
-    body { font: 10px "Lucida Grande";}
+    body { font: 10px "Lucida Grande"; padding: 50px;}
   </style>
 </head>
 <body ng-app="testapp">
   <div ng-controller="TestCtrl">
-    <tagger ng-model="tags"></tagger>
+    <tagger ng-model="tags" options="options"></tagger>
     <pre>{{ tags | json }}</pre>
   </div>
 </body>

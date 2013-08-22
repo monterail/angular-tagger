@@ -4,12 +4,15 @@
 angular.module('myApp', ['tagger']);
 // ...
 
-$scope.tags = ["angular", "bower"]
+$scope.options = ["Text", "Markdown", "HTML", "PHP", "Python",
+                  "Java", "JavaScript", "Ruby", "VHDL",
+                  "Verilog", "C#", "C/C++"]
+$scope.tags = ["Markdown", "Ruby"]
 ```
 
 
 ```html
-<tagger ng-model="tags"/>
+<tagger ng-model="tags" options="options"/>
 ```
 
 
