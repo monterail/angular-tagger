@@ -84,9 +84,12 @@
             switch ($event.keyCode) {
               case 8:
                 return _updateMatching();
+              case 27:
+                return $scope.hide();
               default:
                 if ((65 < (_ref2 = $event.keyCode) && _ref2 < 90)) {
                   _updateMatching();
+                  $scope.show();
                   return $scope.selected = 0;
                 }
             }
@@ -127,6 +130,9 @@
           $scope.show = function() {
             return $scope.expanded = true;
           };
+          $scope.hide = function() {
+            return $scope.expanded = false;
+          };
           $scope.removeTag = function(pos) {
             $scope.tags.splice(pos, 1);
             if (pos < $scope.pos) {
@@ -135,6 +141,11 @@
             _updateMatching();
             return _updateFocus();
           };
+          angular.element(document).bind("click", function(e) {
+            return $scope.$apply(function() {
+              return $scope.hide();
+            });
+          });
           _updateMatching();
           return input.bind("focus", function() {
             return $scope.$apply(function() {
