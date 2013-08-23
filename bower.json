@@ -6,7 +6,10 @@
   ],
   "repository": "git://github.com/monterail/angular-tagger.git",
   "description": "Input for tagging",
-  "main": "build/angular-tagger.js",
+  "main": [
+    "build/angular-tagger.js",
+    "build/angular-tagger.css"
+  ],
   "dependencies": {
     "angular": "~1.0.7"
   },
