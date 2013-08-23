@@ -92,9 +92,12 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       switch $event.keyCode
         when 8 # Backspace
           _updateMatching()
+        when 27 # Escape
+          $scope.hide()
         else
           if 65 < $event.keyCode < 90
             _updateMatching()
+            $scope.show()
             $scope.selected = 0
 
     $scope.handleKeyDown = ($event) ->
@@ -127,12 +130,18 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     $scope.show = () ->
       $scope.expanded = true
 
+    $scope.hide = () ->
+      $scope.expanded = false
+
     $scope.removeTag = (pos) ->
       $scope.tags.splice(pos, 1)
       if pos < $scope.pos
         $scope.pos--
       _updateMatching()
       _updateFocus()
+
+    angular.element(document).bind "click", (e) ->
+      $scope.$apply -> $scope.hide()
 
     # bootstrap
     _updateMatching()
