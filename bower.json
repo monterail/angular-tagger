@@ -1,8 +1,9 @@
 {
   "name": "angular-tagger",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "authors": [
-    "Tymon Tobolski <tymon.tobolski@monterail.com>"
+    "Tymon Tobolski <tymon.tobolski@monterail.com>",
+    "Krzysztof Jung <krzysztof.jung@monterail.com>"
   ],
   "repository": "git://github.com/monterail/angular-tagger.git",
   "description": "Input for tagging",

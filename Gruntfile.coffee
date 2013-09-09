@@ -1,8 +1,8 @@
 module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-coffee')
+  grunt.loadNpmTasks('grunt-contrib-less')
   grunt.loadNpmTasks('grunt-contrib-uglify')
   grunt.loadNpmTasks('grunt-contrib-watch')
-  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-release')
 
 
@@ -23,12 +23,11 @@ module.exports = (grunt) ->
         npm: false
     watch:
       scripts:
-        files: ['src/*.coffee']
-        tasks: ['coffee']
-    copy:
+        files: ['src/*']
+        tasks: ['default']
+    less:
       main:
-        files: [
-          {expand: true, cwd: 'src/', src: ['*.css'], dest: 'build/', filter: 'isFile'}
-        ]
+        files:
+          "build/angular-tagger.css": "src/angular-tagger.less"
 
-  grunt.registerTask "default", ["coffee", "copy", "uglify"]
+  grunt.registerTask "default", ["coffee", "less", "uglify"]

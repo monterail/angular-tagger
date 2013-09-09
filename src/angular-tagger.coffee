@@ -25,6 +25,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
           ng-show="pos == $index"
           ng-keydown="handleKeyDown($event)"
           ng-keyup="handleKeyUp($event)"
+          ng-click="handleInputClick($event)"
           class="angular-tagger_input" />
         <span class="angular-tagger_tag">
           {{ tag }}
@@ -37,14 +38,19 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       ng-show="pos == tags.length"
       ng-keydown="handleKeyDown($event)"
       ng-keyup="handleKeyUp($event)"
+      ng-click="handleInputClick($event)"
       class="angular-tagger_input" />
     <ul ng-show="expanded" class="angular-tagger_matching">
       <li class="angular-tagger_matching_item_new"
+        ng-mouseover="selectItem(-1)"
+        ng-click="handleItemClick($event)"
         ng-class='{"angular-tagger_matching_item_selected": selected == -1}'>
         Add: {{ query }}...
       </li>
       <li
         ng-repeat="e in matching"
+        ng-mouseover="selectItem($index)"
+        ng-click="handleItemClick($event)"
         class="angular-tagger_matching_item"
         ng-class='{"angular-tagger_matching_item_selected": $index == selected}'>
         {{ e }}
@@ -82,15 +88,16 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     _updateFocus = () ->
       # focusing on hidden element does not work
       $timeout ->
-        e = if $scope.pos == $scope.tags.length
-          input[0]
-        else
-          element.children().eq(0).children().eq($scope.pos).children()[0]
-        e.focus()
+        _currentInput().focus()
+
+    _currentInput = () ->
+      return if $scope.pos == $scope.tags.length then input[0] else element.children().eq(0).children().eq($scope.pos).children()[0]
 
     $scope.handleKeyUp = ($event) ->
       switch $event.keyCode
         when 8 # Backspace
+          _updateMatching()
+        when 46 # Delete
           _updateMatching()
         when 27 # Escape
           $scope.hide()
@@ -98,9 +105,10 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
           if 65 < $event.keyCode < 90
             _updateMatching()
             $scope.show()
-            $scope.selected = 0
+            $scope.selected = -1
 
     $scope.handleKeyDown = ($event) ->
+      console.log "key down: " + $event.keyCode
       switch $event.keyCode
         when 38 # Up
           $scope.selected = Math.max($scope.selected - 1, -1)
@@ -109,15 +117,13 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
           $scope.selected = Math.min($scope.selected + 1, $scope.matching.length - 1)
           $event.preventDefault()
         when 13 # Enter
-          $scope.tags.splice $scope.pos, 0, ($scope.matching[$scope.selected] || $scope.query)
-          $scope.pos++
-          $scope.query = ""
-          $scope.selected = -1
-          _updateMatching()
-          _updateFocus()
+          $scope.addItem()
         when 8 # Backspace
           if $scope.query == "" && $scope.pos > 0
             $scope.removeTag($scope.pos-1)
+        when 46 # Delete
+          if $scope.query == "" && $scope.pos < $scope.tags.length
+            $scope.removeTag($scope.pos)
         when 37 # Left
           if $scope.query == ""
             $scope.pos = Math.max($scope.pos - 1, 0)
@@ -127,11 +133,32 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
             $scope.pos = Math.min($scope.pos + 1, $scope.tags.length)
             _updateFocus()
 
+    $scope.handleInputClick = ($event) ->
+      $event.stopPropagation()
+
+    $scope.handleItemClick = ($event) ->
+      $scope.addItem()
+      $event.stopPropagation()
+
+
+    $scope.addItem = () ->
+      $scope.tags.splice $scope.pos, 0, ($scope.matching[$scope.selected] || $scope.query)
+      $scope.query = ""
+      _updateMatching()
+      $scope.selected = Math.min($scope.selected, $scope.matching.length - 1)
+      $scope.pos++
+      _updateFocus()
+
+    $scope.selectItem = (index) ->
+      $scope.selected = index
+
     $scope.show = () ->
       $scope.expanded = true
 
     $scope.hide = () ->
       $scope.expanded = false
+      _currentInput().blur()
+      $scope.pos = $scope.tags.length
 
     $scope.removeTag = (pos) ->
       $scope.tags.splice(pos, 1)

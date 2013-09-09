@@ -31,13 +31,13 @@
       return {
         restrict: "AE",
         replace: true,
-        template: "<span class=\"angular-tagger\">\n  <span>\n    <span ng-repeat=\"tag in tags\">\n      <input type=\"text\"\n        ng-model=\"$parent.query\"\n        ng-show=\"pos == $index\"\n        ng-keydown=\"handleKeyDown($event)\"\n        ng-keyup=\"handleKeyUp($event)\"\n        class=\"angular-tagger_input\" />\n      <span class=\"angular-tagger_tag\">\n        {{ tag }}\n        <span class=\"angular-tagger_tag_delete\" ng-click=\"removeTag($index)\">x</span>\n      </span>\n    </span>\n  </span>\n  <input type=\"text\"\n    ng-model=\"query\"\n    ng-show=\"pos == tags.length\"\n    ng-keydown=\"handleKeyDown($event)\"\n    ng-keyup=\"handleKeyUp($event)\"\n    class=\"angular-tagger_input\" />\n  <ul ng-show=\"expanded\" class=\"angular-tagger_matching\">\n    <li class=\"angular-tagger_matching_item_new\"\n      ng-class='{\"angular-tagger_matching_item_selected\": selected == -1}'>\n      Add: {{ query }}...\n    </li>\n    <li\n      ng-repeat=\"e in matching\"\n      class=\"angular-tagger_matching_item\"\n      ng-class='{\"angular-tagger_matching_item_selected\": $index == selected}'>\n      {{ e }}\n    </li>\n  </ul>\n</span>",
+        template: "<span class=\"angular-tagger\">\n  <span>\n    <span ng-repeat=\"tag in tags\">\n      <input type=\"text\"\n        ng-model=\"$parent.query\"\n        ng-show=\"pos == $index\"\n        ng-keydown=\"handleKeyDown($event)\"\n        ng-keyup=\"handleKeyUp($event)\"\n        ng-click=\"handleInputClick($event)\"\n        class=\"angular-tagger_input\" />\n      <span class=\"angular-tagger_tag\">\n        {{ tag }}\n        <span class=\"angular-tagger_tag_delete\" ng-click=\"removeTag($index)\">x</span>\n      </span>\n    </span>\n  </span>\n  <input type=\"text\"\n    ng-model=\"query\"\n    ng-show=\"pos == tags.length\"\n    ng-keydown=\"handleKeyDown($event)\"\n    ng-keyup=\"handleKeyUp($event)\"\n    ng-click=\"handleInputClick($event)\"\n    class=\"angular-tagger_input\" />\n  <ul ng-show=\"expanded\" class=\"angular-tagger_matching\">\n    <li class=\"angular-tagger_matching_item_new\"\n      ng-mouseover=\"selectItem(-1)\"\n      ng-click=\"handleItemClick($event)\"\n      ng-class='{\"angular-tagger_matching_item_selected\": selected == -1}'>\n      Add: {{ query }}...\n    </li>\n    <li\n      ng-repeat=\"e in matching\"\n      ng-mouseover=\"selectItem($index)\"\n      ng-click=\"handleItemClick($event)\"\n      class=\"angular-tagger_matching_item\"\n      ng-class='{\"angular-tagger_matching_item_selected\": $index == selected}'>\n      {{ e }}\n    </li>\n  </ul>\n</span>",
         scope: {
           tags: "=ngModel",
           options: "="
         },
         link: function($scope, element, attrs) {
-          var input, _updateFocus, _updateMatching;
+          var input, _currentInput, _updateFocus, _updateMatching;
           $scope.query = "";
           $scope.expanded = false;
           $scope.matching = [];
@@ -74,15 +74,22 @@
           };
           _updateFocus = function() {
             return $timeout(function() {
-              var e;
-              e = $scope.pos === $scope.tags.length ? input[0] : element.children().eq(0).children().eq($scope.pos).children()[0];
-              return e.focus();
+              return _currentInput().focus();
             });
+          };
+          _currentInput = function() {
+            if ($scope.pos === $scope.tags.length) {
+              return input[0];
+            } else {
+              return element.children().eq(0).children().eq($scope.pos).children()[0];
+            }
           };
           $scope.handleKeyUp = function($event) {
             var _ref2;
             switch ($event.keyCode) {
               case 8:
+                return _updateMatching();
+              case 46:
                 return _updateMatching();
               case 27:
                 return $scope.hide();
@@ -90,11 +97,12 @@
                 if ((65 < (_ref2 = $event.keyCode) && _ref2 < 90)) {
                   _updateMatching();
                   $scope.show();
-                  return $scope.selected = 0;
+                  return $scope.selected = -1;
                 }
             }
           };
           $scope.handleKeyDown = function($event) {
+            console.log("key down: " + $event.keyCode);
             switch ($event.keyCode) {
               case 38:
                 $scope.selected = Math.max($scope.selected - 1, -1);
@@ -103,15 +111,15 @@
                 $scope.selected = Math.min($scope.selected + 1, $scope.matching.length - 1);
                 return $event.preventDefault();
               case 13:
-                $scope.tags.splice($scope.pos, 0, $scope.matching[$scope.selected] || $scope.query);
-                $scope.pos++;
-                $scope.query = "";
-                $scope.selected = -1;
-                _updateMatching();
-                return _updateFocus();
+                return $scope.addItem();
               case 8:
                 if ($scope.query === "" && $scope.pos > 0) {
                   return $scope.removeTag($scope.pos - 1);
+                }
+                break;
+              case 46:
+                if ($scope.query === "" && $scope.pos < $scope.tags.length) {
+                  return $scope.removeTag($scope.pos);
                 }
                 break;
               case 37:
@@ -127,11 +135,31 @@
                 }
             }
           };
+          $scope.handleInputClick = function($event) {
+            return $event.stopPropagation();
+          };
+          $scope.handleItemClick = function($event) {
+            $scope.addItem();
+            return $event.stopPropagation();
+          };
+          $scope.addItem = function() {
+            $scope.tags.splice($scope.pos, 0, $scope.matching[$scope.selected] || $scope.query);
+            $scope.query = "";
+            _updateMatching();
+            $scope.selected = Math.min($scope.selected, $scope.matching.length - 1);
+            $scope.pos++;
+            return _updateFocus();
+          };
+          $scope.selectItem = function(index) {
+            return $scope.selected = index;
+          };
           $scope.show = function() {
             return $scope.expanded = true;
           };
           $scope.hide = function() {
-            return $scope.expanded = false;
+            $scope.expanded = false;
+            _currentInput().blur();
+            return $scope.pos = $scope.tags.length;
           };
           $scope.removeTag = function(pos) {
             $scope.tags.splice(pos, 1);
