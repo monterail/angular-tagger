@@ -102,7 +102,6 @@
             }
           };
           $scope.handleKeyDown = function($event) {
-            console.log("key down: " + $event.keyCode);
             switch ($event.keyCode) {
               case 38:
                 $scope.selected = Math.max($scope.selected - 1, -1);

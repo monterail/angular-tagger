@@ -108,7 +108,6 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
             $scope.selected = -1
 
     $scope.handleKeyDown = ($event) ->
-      console.log "key down: " + $event.keyCode
       switch $event.keyCode
         when 38 # Up
           $scope.selected = Math.max($scope.selected - 1, -1)
