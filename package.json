@@ -1,8 +1,9 @@
 {
   "name": "angular-tagger",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "authors": [
-    "Tymon Tobolski <tymon.tobolski@monterail.com>"
+    "Tymon Tobolski <tymon.tobolski@monterail.com>",
+    "Krzysztof Jung <krzysztof.jung@monterail.com>"
   ],
   "repository": "git://github.com/monterail/angular-tagger.git",
   "description": "Input for tagging",
@@ -13,9 +14,9 @@
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-coffee": "~0.7.0",
+    "grunt-contrib-less": "~0.7.0",
     "grunt-contrib-uglify": "~0.2.2",
     "grunt-contrib-watch": "~0.5.2",
-    "grunt-contrib-copy": "~0.4.1",
     "grunt-release": "~0.5.1"
   },
   "keywords": [
