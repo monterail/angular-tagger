@@ -19,6 +19,9 @@
   background: none;
   outline: none;
   width: auto;
+  min-width: 10px;
+  display: inline-block;
+  height: 20px;
 }
 .angular-tagger_matching {
   position: absolute;

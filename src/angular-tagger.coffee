@@ -11,6 +11,21 @@ for [directiveName, eventName] in [["ngKeydown", "keydown"], ["ngKeyup", "keyup"
           scope.$apply -> fn(scope, {$event: event})
     ]
 
+angular.module("tagger").directive "taggerContenteditable", ->
+  require: "ngModel"
+  link: (scope, elm, attrs, ctrl) ->
+    elm.attr "contenteditable", true
+    update = undefined
+    ctrl.$render = ->
+      elm.text ctrl.$viewValue
+
+    update = ->
+      scope.$apply ->
+        ctrl.$setViewValue elm.text()
+
+    elm.bind "keyup", update
+    elm.bind "keydown", update
+
 angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile, $timeout) ->
   restrict: "AE"
   replace: true
@@ -20,26 +35,28 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
   <span class="angular-tagger">
     <span>
       <span ng-repeat="tag in tags">
-        <input type="text"
+        <span tagger-contenteditable="true"
           ng-model="$parent.query"
           ng-show="pos == $index"
           ng-keydown="handleKeyDown($event)"
           ng-keyup="handleKeyUp($event)"
           ng-click="handleInputClick($event)"
-          class="angular-tagger_input" />
+          class="angular-tagger_input">
+        </span>
         <span class="angular-tagger_tag">
           {{ tag }}
           <span class="angular-tagger_tag_delete" ng-click="removeTag($index)">x</span>
         </span>
       </span>
     </span>
-    <input type="text"
+    <span tagger-contenteditable="true"
       ng-model="query"
       ng-show="pos == tags.length"
       ng-keydown="handleKeyDown($event)"
       ng-keyup="handleKeyUp($event)"
       ng-click="handleInputClick($event)"
-      class="angular-tagger_input" />
+      class="angular-tagger_input">
+    </span>
     <ul ng-show="expanded" class="angular-tagger_matching">
       <li class="angular-tagger_matching_item_new"
         ng-mouseover="selectItem(-1)"
@@ -141,12 +158,18 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
 
     $scope.addItem = () ->
-      $scope.tags.splice $scope.pos, 0, ($scope.matching[$scope.selected] || $scope.query)
-      $scope.query = ""
-      _updateMatching()
-      $scope.selected = Math.min($scope.selected, $scope.matching.length - 1)
-      $scope.pos++
-      _updateFocus()
+      console.log "selected " + $scope.selected
+      console.log "query " + $scope.query
+      if $scope.selected > -1 or $scope.query
+        if $scope.selected == -1 and $scope.query
+          $scope.tags.splice $scope.pos, 0, $scope.query
+        else if $scope.selected > -1
+          $scope.tags.splice $scope.pos, 0, $scope.matching[$scope.selected]
+        $scope.query = ""
+        _updateMatching()
+        $scope.selected = Math.min($scope.selected, $scope.matching.length - 1)
+        $scope.pos++
+        _updateFocus()
 
     $scope.selectItem = (index) ->
       $scope.selected = index
