@@ -15,14 +15,11 @@ angular.module("tagger").directive "taggerContenteditable", ->
   require: "ngModel"
   link: (scope, elm, attrs, ctrl) ->
     elm.attr "contenteditable", true
-    update = undefined
     ctrl.$render = ->
       elm.text ctrl.$viewValue
-
     update = ->
       scope.$apply ->
         ctrl.$setViewValue elm.text()
-
     elm.bind "keyup", update
     elm.bind "keydown", update
 
@@ -33,19 +30,19 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
   # terminal: true
   template: """
   <span class="angular-tagger">
-    <span>
-      <span ng-repeat="tag in tags">
+    <span class="angular-tagger__wrapper">
+      <span class="angular-tagger__holder" ng-repeat="tag in tags">
         <span tagger-contenteditable="true"
           ng-model="$parent.query"
           ng-show="pos == $index"
           ng-keydown="handleKeyDown($event)"
           ng-keyup="handleKeyUp($event)"
           ng-click="handleInputClick($event)"
-          class="angular-tagger_input">
+          class="angular-tagger__input">
         </span>
-        <span class="angular-tagger_tag">
+        <span class="angular-tagger__tag">
           {{ tag }}
-          <span class="angular-tagger_tag_delete" ng-click="removeTag($index)">x</span>
+          <span class="angular-tagger-tag__delete" ng-click="removeTag($index)">x</span>
         </span>
       </span>
     </span>
@@ -55,24 +52,26 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       ng-keydown="handleKeyDown($event)"
       ng-keyup="handleKeyUp($event)"
       ng-click="handleInputClick($event)"
-      class="angular-tagger_input">
+      class="angular-tagger__input">
     </span>
-    <ul ng-show="expanded" class="angular-tagger_matching">
-      <li class="angular-tagger_matching_item_new"
-        ng-mouseover="selectItem(-1)"
-        ng-click="handleItemClick($event)"
-        ng-class='{"angular-tagger_matching_item_selected": selected == -1}'>
-        Add: {{ query }}...
-      </li>
-      <li
-        ng-repeat="e in matching"
-        ng-mouseover="selectItem($index)"
-        ng-click="handleItemClick($event)"
-        class="angular-tagger_matching_item"
-        ng-class='{"angular-tagger_matching_item_selected": $index == selected}'>
-        {{ e }}
-      </li>
-    </ul>
+    <div class="angular-tagger__hook">
+      <ul ng-show="expanded" class="angular-tagger__matching">
+        <li class="angular-tagger__matching-item"
+          ng-mouseover="selectItem(-1)"
+          ng-click="handleItemClick($event)"
+          ng-class='{"angular-tagger__matching-item--selected": selected == -1}'>
+          Add: {{ query }}...
+        </li>
+        <li
+          ng-repeat="e in matching"
+          ng-mouseover="selectItem($index)"
+          ng-click="handleItemClick($event)"
+          class="angular-tagger__matching-item"
+          ng-class='{"angular-tagger__matching-item--selected": $index == selected}'>
+          {{ e }}
+        </li>
+      </ul>
+    </div>
   </span>
   """
   scope:
@@ -158,8 +157,6 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
 
     $scope.addItem = () ->
-      console.log "selected " + $scope.selected
-      console.log "query " + $scope.query
       if $scope.selected > -1 or $scope.query
         if $scope.selected == -1 and $scope.query
           $scope.tags.splice $scope.pos, 0, $scope.query

@@ -32,7 +32,6 @@
       link: function(scope, elm, attrs, ctrl) {
         var update;
         elm.attr("contenteditable", true);
-        update = void 0;
         ctrl.$render = function() {
           return elm.text(ctrl.$viewValue);
         };
@@ -52,7 +51,7 @@
       return {
         restrict: "AE",
         replace: true,
-        template: "<span class=\"angular-tagger\">\n  <span>\n    <span ng-repeat=\"tag in tags\">\n      <span tagger-contenteditable=\"true\"\n        ng-model=\"$parent.query\"\n        ng-show=\"pos == $index\"\n        ng-keydown=\"handleKeyDown($event)\"\n        ng-keyup=\"handleKeyUp($event)\"\n        ng-click=\"handleInputClick($event)\"\n        class=\"angular-tagger_input\">\n      </span>\n      <span class=\"angular-tagger_tag\">\n        {{ tag }}\n        <span class=\"angular-tagger_tag_delete\" ng-click=\"removeTag($index)\">x</span>\n      </span>\n    </span>\n  </span>\n  <span tagger-contenteditable=\"true\"\n    ng-model=\"query\"\n    ng-show=\"pos == tags.length\"\n    ng-keydown=\"handleKeyDown($event)\"\n    ng-keyup=\"handleKeyUp($event)\"\n    ng-click=\"handleInputClick($event)\"\n    class=\"angular-tagger_input\">\n  </span>\n  <ul ng-show=\"expanded\" class=\"angular-tagger_matching\">\n    <li class=\"angular-tagger_matching_item_new\"\n      ng-mouseover=\"selectItem(-1)\"\n      ng-click=\"handleItemClick($event)\"\n      ng-class='{\"angular-tagger_matching_item_selected\": selected == -1}'>\n      Add: {{ query }}...\n    </li>\n    <li\n      ng-repeat=\"e in matching\"\n      ng-mouseover=\"selectItem($index)\"\n      ng-click=\"handleItemClick($event)\"\n      class=\"angular-tagger_matching_item\"\n      ng-class='{\"angular-tagger_matching_item_selected\": $index == selected}'>\n      {{ e }}\n    </li>\n  </ul>\n</span>",
+        template: "<span class=\"angular-tagger\">\n  <span class=\"angular-tagger__wrapper\">\n    <span class=\"angular-tagger__holder\" ng-repeat=\"tag in tags\">\n      <span tagger-contenteditable=\"true\"\n        ng-model=\"$parent.query\"\n        ng-show=\"pos == $index\"\n        ng-keydown=\"handleKeyDown($event)\"\n        ng-keyup=\"handleKeyUp($event)\"\n        ng-click=\"handleInputClick($event)\"\n        class=\"angular-tagger__input\">\n      </span>\n      <span class=\"angular-tagger__tag\">\n        {{ tag }}\n        <span class=\"angular-tagger-tag__delete\" ng-click=\"removeTag($index)\">x</span>\n      </span>\n    </span>\n  </span>\n  <span tagger-contenteditable=\"true\"\n    ng-model=\"query\"\n    ng-show=\"pos == tags.length\"\n    ng-keydown=\"handleKeyDown($event)\"\n    ng-keyup=\"handleKeyUp($event)\"\n    ng-click=\"handleInputClick($event)\"\n    class=\"angular-tagger__input\">\n  </span>\n  <div class=\"angular-tagger__hook\">\n    <ul ng-show=\"expanded\" class=\"angular-tagger__matching\">\n      <li class=\"angular-tagger__matching-item\"\n        ng-mouseover=\"selectItem(-1)\"\n        ng-click=\"handleItemClick($event)\"\n        ng-class='{\"angular-tagger__matching-item--selected\": selected == -1}'>\n        Add: {{ query }}...\n      </li>\n      <li\n        ng-repeat=\"e in matching\"\n        ng-mouseover=\"selectItem($index)\"\n        ng-click=\"handleItemClick($event)\"\n        class=\"angular-tagger__matching-item\"\n        ng-class='{\"angular-tagger__matching-item--selected\": $index == selected}'>\n        {{ e }}\n      </li>\n    </ul>\n  </div>\n</span>",
         scope: {
           tags: "=ngModel",
           options: "="
@@ -163,8 +162,6 @@
             return $event.stopPropagation();
           };
           $scope.addItem = function() {
-            console.log("selected " + $scope.selected);
-            console.log("query " + $scope.query);
             if ($scope.selected > -1 || $scope.query) {
               if ($scope.selected === -1 && $scope.query) {
                 $scope.tags.splice($scope.pos, 0, $scope.query);
