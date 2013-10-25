@@ -17,7 +17,8 @@ angular.module("tagger").directive "taggerContenteditable", ->
     elm.attr "contenteditable", true
     ctrl.$render = ->
       elm.text ctrl.$viewValue
-    update = ->
+    update = ($event) ->
+      $event?.preventDefault?() if $event.keyCode == 13
       scope.$apply ->
         ctrl.$setViewValue elm.text()
     elm.bind "keyup", update
@@ -107,7 +108,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
         _currentInput().focus()
 
     _currentInput = () ->
-      return if $scope.pos == $scope.tags.length then input[0] else element.children().eq(0).children().eq($scope.pos).children()[0]
+      if $scope.pos == $scope.tags.length then input[0] else element.children().eq(0).children().eq($scope.pos).children()[0]
 
     $scope.handleKeyUp = ($event) ->
       switch $event.keyCode

@@ -35,7 +35,14 @@
         ctrl.$render = function() {
           return elm.text(ctrl.$viewValue);
         };
-        update = function() {
+        update = function($event) {
+          if ($event.keyCode === 13) {
+            if ($event != null) {
+              if (typeof $event.preventDefault === "function") {
+                $event.preventDefault();
+              }
+            }
+          }
           return scope.$apply(function() {
             return ctrl.$setViewValue(elm.text());
           });
