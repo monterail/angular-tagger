@@ -42,7 +42,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
           class="angular-tagger__input">
         </span>
         <span class="angular-tagger__tag">
-          {{ tag }}
+          {{ config.displayFun(tag) }}
           <span class="angular-tagger-tag__delete" ng-click="removeTag($index, $event)">x</span>
         </span>
       </span>
@@ -70,7 +70,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
           ng-click="handleItemClick($event)"
           class="angular-tagger__matching-item"
           ng-class='{"angular-tagger__matching-item--selected": $index == selected}'>
-          {{ e }}
+          {{ config.displayFun(e) }}
         </li>
       </ul>
     </div>
@@ -92,6 +92,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
     $scope.config =
       disableNew: false
+      displayFun: ((e) -> e)
       limit:      null
 
     if attrs.disableNew?
@@ -99,6 +100,9 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
     if attrs.limit?
       $scope.config.limit = parseInt(attrs.limit)
+
+    if attrs.displayFun?
+      $scope.config.displayFun = $scope.$parent.$eval(attrs.displayFun)
 
     if $scope.config.disableNew
       $scope.selected = 0

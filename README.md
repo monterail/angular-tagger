@@ -22,6 +22,7 @@ Attribute name  | Description
             ----|---
 `disable-new`   | Disables adding new item. <br/> Example: `<tagger ng-model="tags" disable-new>`
 `limit`         | Limit number of selected values. <br/> Example: `<tagger ng-model="tags" limit="5">`
+`display-fun`   | Function for formatting value. <br/> Example: `<tagger ng-model="tags" display-fun="showName">`
 
 
 ## Development

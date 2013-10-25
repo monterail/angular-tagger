@@ -9,6 +9,17 @@
     angular.module("testapp").controller("TestCtrl", function($scope){
       $scope.options = ["Text", "Markdown", "HTML", "PHP", "Python", "Java", "JavaScript", "Ruby", "VHDL", "Verilog", "C#", "C/C++"]
       $scope.tags = ["Markdown", "Ruby"]
+
+      $scope.font = []
+      $scope.fonts = [
+        {id: 1, name: "Lucida"},
+        {id: 2, name: "DejaVu"},
+        {id: 3, name: "Bitstream"},
+        {id: 4, name: "Liberation"},
+        {id: 5, name: "Verdana"}
+      ]
+
+      $scope.showName = function(font){ return font.name; }
     })
   </script>
   <link rel="stylesheet" type="text/css" href="../build/angular-tagger.css"/>
@@ -26,6 +37,9 @@
     <tagger ng-model="tags" options="options" disable-new></tagger>
     <tagger ng-model="tags" options="options" disable-new limit=3></tagger>
     <pre>{{ tags | json }}</pre>
+
+    <tagger ng-model="font" options="fonts" limit="1" disable-new display-fun="showName"></tagger>
+    <pre>{{ font | json }}</pre>
   </div>
 </body>
 </html>
