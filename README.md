@@ -21,6 +21,7 @@ $scope.tags = ["Markdown", "Ruby"]
 Attribute name  | Description
             ----|---
 `disable-new`   | Disables adding new item. <br/> Example: `<tagger ng-model="tags" disable-new>`
+`limit`         | Limit number of selected values. <br/> Example: `<tagger ng-model="tags" limit="5">`
 
 
 ## Development

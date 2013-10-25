@@ -24,6 +24,7 @@
   <div ng-controller="TestCtrl">
     <tagger ng-model="tags" options="options"></tagger>
     <tagger ng-model="tags" options="options" disable-new></tagger>
+    <tagger ng-model="tags" options="options" disable-new limit=3></tagger>
     <pre>{{ tags | json }}</pre>
   </div>
 </body>

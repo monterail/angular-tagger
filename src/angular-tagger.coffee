@@ -92,9 +92,13 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
     $scope.config =
       disableNew: false
+      limit:      null
 
-    if attrs.disableNew != undefined
+    if attrs.disableNew?
       $scope.config.disableNew = attrs.disableNew?
+
+    if attrs.limit?
+      $scope.config.limit = parseInt(attrs.limit)
 
     if $scope.config.disableNew
       $scope.selected = 0
@@ -143,7 +147,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     $scope.handleKeyDown = ($event) ->
       switch $event.keyCode
         when 38 # Up
-          $scope.selected = Math.max($scope.selected - 1, -1)
+          $scope.selected = Math.max($scope.selected - 1, if $scope.config.disableNew then 0 else -1)
           $event.preventDefault()
         when 40 # Down
           $scope.selected = Math.min($scope.selected + 1, $scope.matching.length - 1)
@@ -173,6 +177,8 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       $event.stopPropagation()
 
     $scope.addItem = () ->
+      return if $scope.config.limit && $scope.tags.length >= $scope.config.limit
+
       item = if $scope.config.disableNew
         if $scope.selected > -1
           $scope.matching[$scope.selected]

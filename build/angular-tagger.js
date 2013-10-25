@@ -73,10 +73,14 @@
           $scope.tags || ($scope.tags = []);
           $scope.pos = $scope.tags.length;
           $scope.config = {
-            disableNew: false
+            disableNew: false,
+            limit: null
           };
-          if (attrs.disableNew !== void 0) {
+          if (attrs.disableNew != null) {
             $scope.config.disableNew = attrs.disableNew != null;
+          }
+          if (attrs.limit != null) {
+            $scope.config.limit = parseInt(attrs.limit);
           }
           if ($scope.config.disableNew) {
             $scope.selected = 0;
@@ -150,7 +154,7 @@
           $scope.handleKeyDown = function($event) {
             switch ($event.keyCode) {
               case 38:
-                $scope.selected = Math.max($scope.selected - 1, -1);
+                $scope.selected = Math.max($scope.selected - 1, $scope.config.disableNew ? 0 : -1);
                 return $event.preventDefault();
               case 40:
                 $scope.selected = Math.min($scope.selected + 1, $scope.matching.length - 1);
@@ -189,6 +193,9 @@
           };
           $scope.addItem = function() {
             var item;
+            if ($scope.config.limit && $scope.tags.length >= $scope.config.limit) {
+              return;
+            }
             item = $scope.config.disableNew ? $scope.selected > -1 ? $scope.matching[$scope.selected] : null : $scope.selected === -1 && $scope.query ? $scope.query : $scope.selected > -1 ? $scope.matching[$scope.selected] : void 0;
             if (item) {
               $scope.tags.splice($scope.pos, 0, item);
