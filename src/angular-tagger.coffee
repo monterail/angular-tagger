@@ -30,7 +30,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
   # priority: 0
   # terminal: true
   template: """
-  <span class="angular-tagger">
+  <span class="angular-tagger" ng-click="handleOuterClick($event)">
     <span class="angular-tagger__wrapper">
       <span class="angular-tagger__holder" ng-repeat="tag in tags">
         <span tagger-contenteditable="true"
@@ -43,7 +43,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
         </span>
         <span class="angular-tagger__tag">
           {{ tag }}
-          <span class="angular-tagger-tag__delete" ng-click="removeTag($index)">x</span>
+          <span class="angular-tagger-tag__delete" ng-click="removeTag($index, $event)">x</span>
         </span>
       </span>
     </span>
@@ -112,6 +112,10 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     _currentInput = () ->
       if $scope.pos == $scope.tags.length then input[0] else element.children().eq(0).children().eq($scope.pos).children()[0]
 
+    $scope.handleOuterClick = ($event) ->
+      $event?.stopPropagation?()
+      _updateFocus()
+
     $scope.handleKeyUp = ($event) ->
       switch $event.keyCode
         when 8 # Backspace
@@ -179,10 +183,11 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
     $scope.hide = () ->
       $scope.expanded = false
-      _currentInput().blur()
+      _currentInput()?.blur?()
       $scope.pos = $scope.tags.length
 
-    $scope.removeTag = (pos) ->
+    $scope.removeTag = (pos, $event) ->
+      $event?.stopPropagation?()
       $scope.tags.splice(pos, 1)
       if pos < $scope.pos
         $scope.pos--
