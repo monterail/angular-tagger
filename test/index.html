@@ -20,6 +20,14 @@
       ]
 
       $scope.showName = function(font){ return font.name; }
+
+      $scope.empty = {
+        value: [],
+        options: [],
+        addOption: function() {
+          $scope.empty.options.push(Math.random())
+        }
+      }
     })
   </script>
   <link rel="stylesheet" type="text/css" href="../build/angular-tagger.css"/>
@@ -40,6 +48,11 @@
 
     <tagger ng-model="font" options="fonts" limit="1" disable-new display-fun="showName"></tagger>
     <pre>{{ font | json }}</pre>
+
+    <tagger ng-model="empty.value" options="empty.options"></tagger>
+    <pre>{{ empty | json }}</pre>
+
+    <button ng-click="empty.addOption()">Add option</button>
   </div>
 </body>
 </html>

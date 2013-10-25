@@ -147,7 +147,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
         when 27 # Escape
           $scope.hide()
         else
-          if 65 < $event.keyCode < 90
+          if 48 < $event.keyCode < 90
             _updateMatching()
             $scope.show()
             $scope.selected = if $scope.config.disableNew then 0 else -1
@@ -229,6 +229,8 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
     # bootstrap
     _updateMatching()
+
+    $scope.$watch "options", _updateMatching, true
 
     input.bind "focus", ->
       $scope.$apply -> $scope.show()

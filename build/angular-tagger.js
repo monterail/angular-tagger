@@ -154,7 +154,7 @@
               case 27:
                 return $scope.hide();
               default:
-                if ((65 < (_ref2 = $event.keyCode) && _ref2 < 90)) {
+                if ((48 < (_ref2 = $event.keyCode) && _ref2 < 90)) {
                   _updateMatching();
                   $scope.show();
                   return $scope.selected = $scope.config.disableNew ? 0 : -1;
@@ -251,6 +251,7 @@
             });
           });
           _updateMatching();
+          $scope.$watch("options", _updateMatching, true);
           return input.bind("focus", function() {
             return $scope.$apply(function() {
               return $scope.show();
