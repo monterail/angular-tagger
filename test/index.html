@@ -23,6 +23,7 @@
 <body ng-app="testapp">
   <div ng-controller="TestCtrl">
     <tagger ng-model="tags" options="options"></tagger>
+    <tagger ng-model="tags" options="options" disable-new></tagger>
     <pre>{{ tags | json }}</pre>
   </div>
 </body>

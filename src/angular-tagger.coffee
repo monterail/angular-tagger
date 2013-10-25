@@ -60,6 +60,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
         <li class="angular-tagger__matching-item"
           ng-mouseover="selectItem(-1)"
           ng-click="handleItemClick($event)"
+          ng-hide="config.disableNew"
           ng-class='{"angular-tagger__matching-item--selected": selected == -1}'>
           Add: {{ query }}...
         </li>
@@ -88,6 +89,15 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     $scope.options ||= []
     $scope.tags ||= []
     $scope.pos = $scope.tags.length
+
+    $scope.config =
+      disableNew: false
+
+    if attrs.disableNew != undefined
+      $scope.config.disableNew = attrs.disableNew?
+
+    if $scope.config.disableNew
+      $scope.selected = 0
 
     input = element.children().eq(1)
 
@@ -128,7 +138,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
           if 65 < $event.keyCode < 90
             _updateMatching()
             $scope.show()
-            $scope.selected = -1
+            $scope.selected = if $scope.config.disableNew then 0 else -1
 
     $scope.handleKeyDown = ($event) ->
       switch $event.keyCode
@@ -162,13 +172,19 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       $scope.addItem()
       $event.stopPropagation()
 
-
     $scope.addItem = () ->
-      if $scope.selected > -1 or $scope.query
-        if $scope.selected == -1 and $scope.query
-          $scope.tags.splice $scope.pos, 0, $scope.query
-        else if $scope.selected > -1
-          $scope.tags.splice $scope.pos, 0, $scope.matching[$scope.selected]
+      item = if $scope.config.disableNew
+        if $scope.selected > -1
+          $scope.matching[$scope.selected]
+        else
+          null
+      else if $scope.selected == -1 and $scope.query
+        $scope.query
+      else if $scope.selected > -1
+        $scope.matching[$scope.selected]
+
+      if item
+        $scope.tags.splice $scope.pos, 0, item
         $scope.query = ""
         _updateMatching()
         $scope.selected = Math.min($scope.selected, $scope.matching.length - 1)

@@ -15,6 +15,12 @@ $scope.tags = ["Markdown", "Ruby"]
 <tagger ng-model="tags" options="options"/>
 ```
 
+## Configuration
+
+
+Attribute name  | Description
+            ----|---
+`disable-new`   | Disables adding new item. <br/> Example: `<tagger ng-model="tags" disable-new>`
 
 
 ## Development
