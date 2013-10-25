@@ -114,7 +114,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
       $scope.matching = []
       for opt in $scope.options
-        if rx.test(opt)
+        if rx.test($scope.config.displayFun(opt))
           found = false
           for t in $scope.tags
             if t == opt
@@ -126,9 +126,13 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       # focusing on hidden element does not work
       $timeout ->
         _currentInput().focus()
+        $scope.show()
 
     _currentInput = () ->
       if $scope.pos == $scope.tags.length then input[0] else element.children().eq(0).children().eq($scope.pos).children()[0]
+
+    _overLimit = () ->
+      $scope.config.limit && $scope.tags.length >= $scope.config.limit
 
     $scope.handleOuterClick = ($event) ->
       $event?.stopPropagation?()
@@ -181,7 +185,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       $event.stopPropagation()
 
     $scope.addItem = () ->
-      return if $scope.config.limit && $scope.tags.length >= $scope.config.limit
+      return if _overLimit()
 
       item = if $scope.config.disableNew
         if $scope.selected > -1
@@ -205,7 +209,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       $scope.selected = index
 
     $scope.show = () ->
-      $scope.expanded = true
+      $scope.expanded = !_overLimit()
 
     $scope.hide = () ->
       $scope.expanded = false

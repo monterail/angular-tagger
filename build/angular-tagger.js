@@ -64,7 +64,7 @@
           options: "="
         },
         link: function($scope, element, attrs) {
-          var input, _currentInput, _updateFocus, _updateMatching;
+          var input, _currentInput, _overLimit, _updateFocus, _updateMatching;
           $scope.query = "";
           $scope.expanded = false;
           $scope.matching = [];
@@ -100,7 +100,7 @@
             _results = [];
             for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
               opt = _ref2[_j];
-              if (rx.test(opt)) {
+              if (rx.test($scope.config.displayFun(opt))) {
                 found = false;
                 _ref3 = $scope.tags;
                 for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
@@ -122,7 +122,8 @@
           };
           _updateFocus = function() {
             return $timeout(function() {
-              return _currentInput().focus();
+              _currentInput().focus();
+              return $scope.show();
             });
           };
           _currentInput = function() {
@@ -131,6 +132,9 @@
             } else {
               return element.children().eq(0).children().eq($scope.pos).children()[0];
             }
+          };
+          _overLimit = function() {
+            return $scope.config.limit && $scope.tags.length >= $scope.config.limit;
           };
           $scope.handleOuterClick = function($event) {
             if ($event != null) {
@@ -199,7 +203,7 @@
           };
           $scope.addItem = function() {
             var item;
-            if ($scope.config.limit && $scope.tags.length >= $scope.config.limit) {
+            if (_overLimit()) {
               return;
             }
             item = $scope.config.disableNew ? $scope.selected > -1 ? $scope.matching[$scope.selected] : null : $scope.selected === -1 && $scope.query ? $scope.query : $scope.selected > -1 ? $scope.matching[$scope.selected] : void 0;
@@ -216,7 +220,7 @@
             return $scope.selected = index;
           };
           $scope.show = function() {
-            return $scope.expanded = true;
+            return $scope.expanded = !_overLimit();
           };
           $scope.hide = function() {
             var _ref2;
