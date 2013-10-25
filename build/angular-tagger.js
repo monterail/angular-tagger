@@ -69,8 +69,9 @@
           $scope.expanded = false;
           $scope.matching = [];
           $scope.selected = -1;
-          $scope.pos = $scope.tags.length;
           $scope.options || ($scope.options = []);
+          $scope.tags || ($scope.tags = []);
+          $scope.pos = $scope.tags.length;
           input = element.children().eq(1);
           _updateMatching = function() {
             var found, opt, rx, t, _j, _k, _len1, _len2, _ref2, _ref3, _results;

@@ -85,8 +85,9 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     $scope.expanded = false
     $scope.matching = []
     $scope.selected = -1
-    $scope.pos = $scope.tags.length
     $scope.options ||= []
+    $scope.tags ||= []
+    $scope.pos = $scope.tags.length
 
     input = element.children().eq(1)
 
