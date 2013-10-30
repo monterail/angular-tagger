@@ -2,13 +2,15 @@ angular.module "tagger", []
 
 # Angular 1.0.x polyfill for ng-keyup ng-keydown
 # Stolen from https://github.com/angular/angular.js/blob/2bb27d4998805fd89db25192f53d26d259ae615f/src/ng/directive/ngEventDirs.js
-for [directiveName, eventName] in [["ngKeydown", "keydown"], ["ngKeyup", "keyup"]]
-  do (directiveName, eventName) ->
+for directiveName in ["ngKeydown", "ngKeyup", "ngBlur", "ngFocus"]
+  do (directiveName) ->
     angular.module("tagger").directive directiveName, ["$parse", ($parse) ->
       (scope, element, attr) ->
         fn = $parse(attr[directiveName])
+        eventName = directiveName.substring(2).toLowerCase()
         element.bind eventName, (event) ->
-          scope.$apply -> fn(scope, {$event: event})
+          fn(scope, {$event: event})
+          scope.$apply() unless scope.$$phase || scope.$parent.$$phase || scope.$root.$$phase
     ]
 
 angular.module("tagger").directive "taggerContenteditable", ->
@@ -39,11 +41,16 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
           ng-keydown="handleKeyDown($event)"
           ng-keyup="handleKeyUp($event)"
           ng-click="handleInputClick($event)"
+          ng-blur="handleBlur($index, $event)"
           class="angular-tagger__input">
         </span>
         <span class="angular-tagger__tag">
           {{ config.displayFun(tag) }}
-          <span class="angular-tagger-tag__delete" ng-click="removeTag($index, $event)">x</span>
+          <span
+            class="angular-tagger-tag__delete"
+            ng-mousedown="handleMousedown()"
+            ng-mouseup="handleMouseup()"
+            ng-click="removeTag($index, $event)">x</span>
         </span>
       </span>
     </span>
@@ -54,11 +61,15 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       ng-keyup="handleKeyUp($event)"
       ng-click="handleInputClick($event)"
       placeholder="{{ placeholder }}"
+      ng-blur="handleBlur(tags.length, $event)"
+      ng-focus="handleFocus($event)"
       class="angular-tagger__input">
     </span>
     <div class="angular-tagger__hook">
       <ul ng-show="expanded" class="angular-tagger__matching">
         <li class="angular-tagger__matching-item"
+          ng-mousedown="handleMousedown()"
+          ng-mouseup="handleMouseup()"
           ng-mouseover="selectItem(-1)"
           ng-click="handleItemClick($event)"
           ng-hide="config.disableNew || !query.length"
@@ -67,6 +78,8 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
         </li>
         <li
           ng-repeat="e in matching"
+          ng-mousedown="handleMousedown()"
+          ng-mouseup="handleMouseup()"
           ng-mouseover="selectItem($index)"
           ng-click="handleItemClick($event)"
           class="angular-tagger__matching-item"
@@ -154,6 +167,10 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       $event?.stopPropagation?()
       _updateFocus()
 
+    mousedown = false
+    $scope.handleMousedown = -> mousedown = true
+    $scope.handleMouseup = -> mousedown = false
+
     $scope.handleKeyUp = ($event) ->
       switch $event.keyCode
         when 8 # Backspace
@@ -199,6 +216,12 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       $scope.addItem()
       $event.stopPropagation()
 
+    $scope.handleBlur = ($index, $event) ->
+      $scope.hide() if $index == $scope.pos && !mousedown
+
+    $scope.handleFocus = ($event) ->
+      $scope.show()
+
     $scope.addItem = () ->
       return if _overLimit()
 
@@ -228,25 +251,24 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
     $scope.hide = () ->
       $scope.expanded = false
-      _currentInput()?.blur?()
+      $scope.query = ""
       $scope.pos = $scope.tags.length
+      _currentInput()?.blur?()
 
     $scope.removeTag = (pos, $event) ->
       $event?.stopPropagation?()
       $scope.tags.splice(pos, 1)
+
       if pos < $scope.pos
         $scope.pos--
-      _updateMatching()
-      _updateFocus()
 
-    angular.element(document).bind "click", (e) ->
-      $scope.$apply -> $scope.hide()
+      if $scope.expanded
+        _updateMatching()
+        _updateFocus()
+
 
     # bootstrap
     _updateMatching()
 
     $scope.$watch "options", _updateMatching, true
-
-    input.bind "focus", ->
-      $scope.$apply -> $scope.show()
 ]
