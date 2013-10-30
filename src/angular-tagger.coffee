@@ -60,7 +60,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
         <li class="angular-tagger__matching-item"
           ng-mouseover="selectItem(-1)"
           ng-click="handleItemClick($event)"
-          ng-hide="config.disableNew"
+          ng-hide="config.disableNew || !query.length"
           ng-class='{"angular-tagger__matching-item--selected": selected == -1}'>
           Add: {{ query }}...
         </li>
@@ -85,7 +85,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     $scope.query = ""
     $scope.expanded = false
     $scope.matching = []
-    $scope.selected = -1
+    $scope.selected = 0
     $scope.options ||= []
     $scope.tags ||= []
     $scope.pos = $scope.tags.length
@@ -122,6 +122,14 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
           $scope.matching.push opt unless found
 
+      $scope.selected = if $scope.config.disableNew
+        0
+      else
+        if $scope.matching.length > 0
+          0
+        else
+          -1
+
     _updateFocus = () ->
       # focusing on hidden element does not work
       $timeout ->
@@ -150,7 +158,6 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
           if 48 < $event.keyCode < 90
             _updateMatching()
             $scope.show()
-            $scope.selected = if $scope.config.disableNew then 0 else -1
 
     $scope.handleKeyDown = ($event) ->
       switch $event.keyCode
