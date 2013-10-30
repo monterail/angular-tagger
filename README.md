@@ -24,6 +24,7 @@ Attribute name  | Description
 `limit`         | Limit number of selected values. <br/> Example: `<tagger ng-model="tags" limit="5">`
 `display-fun`   | Function for formatting value. <br/> Example: `<tagger ng-model="tags" display-fun="showName">`
 `placeholder`   | Placeholder string. <br/> Example: `<tagger ng-model="tags" placeholder="Select something">`
+`single`        | Make it a single select with slightly different behavior. <br/> Example: `<tagger ng-model="tags" single>`
 
 
 ## Development
