@@ -53,6 +53,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       ng-keydown="handleKeyDown($event)"
       ng-keyup="handleKeyUp($event)"
       ng-click="handleInputClick($event)"
+      placeholder="{{ config.placeholder }}"
       class="angular-tagger__input">
     </span>
     <div class="angular-tagger__hook">
@@ -103,6 +104,9 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
     if attrs.displayFun?
       $scope.config.displayFun = $scope.$parent.$eval(attrs.displayFun)
+
+    if attrs.placeholder?
+      $scope.config.placeholder = attrs.placeholder
 
     if $scope.config.disableNew
       $scope.selected = 0

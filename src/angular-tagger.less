@@ -34,6 +34,9 @@
   padding: 1px 0 1px 3px;
   vertical-align: middle;
 }
+.angular-tagger__input:empty:not(:focus):before {
+  content: attr(placeholder)
+}
 .angular-tagger__hook {
   width: 100%;
   clear: both;

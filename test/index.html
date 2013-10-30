@@ -41,7 +41,7 @@
 </head>
 <body ng-app="testapp">
   <div ng-controller="TestCtrl">
-    <tagger ng-model="tags" options="options"></tagger>
+    <tagger ng-model="tags" options="options" placeholder="Select some tags"></tagger>
     <tagger ng-model="tags" options="options" disable-new></tagger>
     <tagger ng-model="tags" options="options" disable-new limit=3></tagger>
     <pre>{{ tags | json }}</pre>
@@ -49,7 +49,7 @@
     <tagger ng-model="font" options="fonts" limit="1" disable-new display-fun="showName"></tagger>
     <pre>{{ font | json }}</pre>
 
-    <tagger ng-model="empty.value" options="empty.options"></tagger>
+    <tagger ng-model="empty.value" options="empty.options" placeholder="Select something"></tagger>
     <pre>{{ empty | json }}</pre>
 
     <button ng-click="empty.addOption()">Add option</button>
