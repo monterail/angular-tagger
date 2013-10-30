@@ -37,16 +37,21 @@
       font-family: Corbel, "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", "Bitstream Vera Sans", "Liberation Sans", Verdana, "Verdana Ref", sans-serif;;
       padding: 50px;
     }
+
+    .angular-tagger {
+      width: 300px;
+    }
   </style>
 </head>
 <body ng-app="testapp">
   <div ng-controller="TestCtrl">
     <tagger ng-model="tags" options="options" placeholder="Select some tags"></tagger>
+    <input type="text"/>
     <tagger ng-model="tags" options="options" disable-new></tagger>
     <tagger ng-model="tags" options="options" disable-new limit=3></tagger>
     <pre>{{ tags | json }}</pre>
 
-    <tagger ng-model="font" options="fonts" limit="1" disable-new display-fun="showName"></tagger>
+    single: <tagger ng-model="font" options="fonts" placeholder="Choose font" single disable-new display-fun="showName"></tagger>
     <pre>{{ font | json }}</pre>
 
     <tagger ng-model="empty.value" options="empty.options" placeholder="Select something"></tagger>

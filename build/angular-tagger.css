@@ -67,3 +67,12 @@
   background: #571e93;
   color: #fff;
 }
+.angular-tagger--single .angular-tagger__tag {
+  display: block;
+}
+.angular-tagger--single .angular-tagger__holder {
+  display: block;
+}
+.angular-tagger--single .angular-tagger-tag__delete {
+  float: right;
+}

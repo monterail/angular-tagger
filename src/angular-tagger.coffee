@@ -32,7 +32,10 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
   # priority: 0
   # terminal: true
   template: """
-  <span class="angular-tagger" ng-click="handleOuterClick($event)">
+  <span
+    class="angular-tagger"
+    ng-click="handleOuterClick($event)"
+    ng-class="{'angular-tagger--single': config.single}">
     <span class="angular-tagger__wrapper">
       <span class="angular-tagger__holder" ng-repeat="tag in tags">
         <span tagger-contenteditable="true"
@@ -56,7 +59,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     </span>
     <span tagger-contenteditable="true"
       ng-model="query"
-      ng-show="pos == tags.length"
+      ng-show="(config.single && !tags.length) || (!config.single && pos == tags.length)"
       ng-keydown="handleKeyDown($event)"
       ng-keyup="handleKeyUp($event)"
       ng-click="handleInputClick($event)"
@@ -123,6 +126,10 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       $scope.config.placeholder = attrs.placeholder
       $scope.placeholder = $scope.config.placeholder
 
+    if attrs.single?
+      $scope.config.single = true
+      $scope.config.limit = 1
+
     if $scope.config.disableNew
       $scope.selected = 0
 
@@ -165,6 +172,9 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
     $scope.handleOuterClick = ($event) ->
       $event?.stopPropagation?()
+      if $scope.config.single
+        $scope.removeTag(0)
+        _updateMatching()
       _updateFocus()
 
     mousedown = false
@@ -243,6 +253,8 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
         $scope.pos++
         _updateFocus()
 
+        $scope.hide() if _overLimit()
+
     $scope.selectItem = (index) ->
       $scope.selected = index
 
@@ -253,7 +265,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       $scope.expanded = false
       $scope.query = ""
       $scope.pos = $scope.tags.length
-      _currentInput()?.blur?()
+      $timeout -> _currentInput()?.blur?()
 
     $scope.removeTag = (pos, $event) ->
       $event?.stopPropagation?()
