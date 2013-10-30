@@ -53,7 +53,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       ng-keydown="handleKeyDown($event)"
       ng-keyup="handleKeyUp($event)"
       ng-click="handleInputClick($event)"
-      placeholder="{{ config.placeholder }}"
+      placeholder="{{ placeholder }}"
       class="angular-tagger__input">
     </span>
     <div class="angular-tagger__hook">
@@ -90,6 +90,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     $scope.options ||= []
     $scope.tags ||= []
     $scope.pos = $scope.tags.length
+    $scope.placeholder = null
 
     $scope.config =
       disableNew: false
@@ -107,6 +108,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
     if attrs.placeholder?
       $scope.config.placeholder = attrs.placeholder
+      $scope.placeholder = $scope.config.placeholder
 
     if $scope.config.disableNew
       $scope.selected = 0
@@ -133,6 +135,8 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
           0
         else
           -1
+
+      $scope.placeholder = if $scope.tags.length > 0 then null else $scope.config.placeholder
 
     _updateFocus = () ->
       # focusing on hidden element does not work
