@@ -95,7 +95,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
   </span>
   """
   scope:
-    tags:     "=ngModel" # can't use ngModelController, we need isolated scope
+    value:     "=ngModel" # can't use ngModelController, we need isolated scope
     options:  "="
 
 
@@ -106,12 +106,12 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     $scope.selected = 0
     $scope.options ||= []
     $scope.tags ||= []
-    $scope.pos = $scope.tags.length
     $scope.placeholder = null
 
     $scope.config =
       disableNew: false
       displayFun: ((e) -> e)
+      createFun: ((e) -> e)
       limit:      null
 
     if attrs.disableNew?
@@ -122,6 +122,9 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
     if attrs.displayFun?
       $scope.config.displayFun = $scope.$parent.$eval(attrs.displayFun)
+
+    if attrs.createFun?
+      $scope.config.createFun = $scope.$parent.$eval(attrs.createFun)
 
     if attrs.placeholder?
       $scope.config.placeholder = attrs.placeholder
@@ -136,6 +139,18 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
 
     if $scope.config.disableNew
       $scope.selected = 0
+
+    if $scope.config.single
+      if $scope.value?
+        $scope.tags = [$scope.value]
+      else
+        $scope.tags = []
+    else
+      $scope.tags = $scope.value || []
+
+    $scope.pos = $scope.tags.length
+
+
 
     input = element.children().eq(1)
 
@@ -231,7 +246,6 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       $event.stopPropagation()
 
     $scope.handleOuterFocus = ($event) ->
-      console.log _currentInput()
       _currentInput()?.focus?()
 
     $scope.handleBlur = ($index, $event) ->
@@ -249,11 +263,12 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
         else
           null
       else if $scope.selected == -1 and $scope.query
-        $scope.query
+        $scope.config.createFun($scope.query)
       else if $scope.selected > -1
         $scope.matching[$scope.selected]
 
       if item
+        console.log "adding ", item
         $scope.tags.splice $scope.pos, 0, item
         $scope.query = ""
         _updateMatching()
@@ -293,4 +308,9 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     _updateMatching()
 
     $scope.$watch "options", _updateMatching, true
+
+    if $scope.config.single
+      $scope.$watch "tags", ->
+        $scope.value = $scope.tags?[0]
+      , true
 ]

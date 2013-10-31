@@ -62,7 +62,7 @@
         replace: true,
         template: "<span\n  class=\"angular-tagger\"\n  ng-click=\"handleOuterClick($event)\"\n  ng-class=\"{'angular-tagger--single': config.single}\"\n  ng-focus=\"handleOuterFocus($event)\">\n  <span class=\"angular-tagger__wrapper\">\n    <span class=\"angular-tagger__holder\" ng-repeat=\"tag in tags\">\n      <span tagger-contenteditable=\"true\"\n        ng-model=\"$parent.query\"\n        ng-show=\"pos == $index\"\n        ng-keydown=\"handleKeyDown($event)\"\n        ng-keyup=\"handleKeyUp($event)\"\n        ng-click=\"handleInputClick($event)\"\n        ng-blur=\"handleBlur($index, $event)\"\n        class=\"angular-tagger__input\">\n      </span>\n      <span class=\"angular-tagger__tag\">\n        {{ config.displayFun(tag) }}\n        <span\n          class=\"angular-tagger-tag__delete\"\n          ng-mousedown=\"handleMousedown()\"\n          ng-mouseup=\"handleMouseup()\"\n          ng-click=\"removeTag($index, $event)\">x</span>\n      </span>\n    </span>\n  </span>\n  <span tagger-contenteditable=\"true\"\n    ng-model=\"query\"\n    ng-show=\"(config.single && !tags.length) || (!config.single && pos == tags.length)\"\n    ng-keydown=\"handleKeyDown($event)\"\n    ng-keyup=\"handleKeyUp($event)\"\n    ng-click=\"handleInputClick($event)\"\n    placeholder=\"{{ placeholder }}\"\n    ng-blur=\"handleBlur(tags.length, $event)\"\n    ng-focus=\"handleFocus($event)\"\n    class=\"angular-tagger__input\">\n  </span>\n  <div class=\"angular-tagger__hook\">\n    <ul ng-show=\"expanded\" class=\"angular-tagger__matching\">\n      <li class=\"angular-tagger__matching-item\"\n        ng-mousedown=\"handleMousedown()\"\n        ng-mouseup=\"handleMouseup()\"\n        ng-mouseover=\"selectItem(-1)\"\n        ng-click=\"handleItemClick($event)\"\n        ng-hide=\"config.disableNew || !query.length\"\n        ng-class='{\"angular-tagger__matching-item--selected\": selected == -1}'>\n        Add: {{ query }}...\n      </li>\n      <li\n        ng-repeat=\"e in matching\"\n        ng-mousedown=\"handleMousedown()\"\n        ng-mouseup=\"handleMouseup()\"\n        ng-mouseover=\"selectItem($index)\"\n        ng-click=\"handleItemClick($event)\"\n        class=\"angular-tagger__matching-item\"\n        ng-class='{\"angular-tagger__matching-item--selected\": $index == selected}'>\n        {{ config.displayFun(e) }}\n      </li>\n    </ul>\n  </div>\n</span>",
         scope: {
-          tags: "=ngModel",
+          value: "=ngModel",
           options: "="
         },
         link: function($scope, element, attrs) {
@@ -73,11 +73,13 @@
           $scope.selected = 0;
           $scope.options || ($scope.options = []);
           $scope.tags || ($scope.tags = []);
-          $scope.pos = $scope.tags.length;
           $scope.placeholder = null;
           $scope.config = {
             disableNew: false,
             displayFun: (function(e) {
+              return e;
+            }),
+            createFun: (function(e) {
               return e;
             }),
             limit: null
@@ -90,6 +92,9 @@
           }
           if (attrs.displayFun != null) {
             $scope.config.displayFun = $scope.$parent.$eval(attrs.displayFun);
+          }
+          if (attrs.createFun != null) {
+            $scope.config.createFun = $scope.$parent.$eval(attrs.createFun);
           }
           if (attrs.placeholder != null) {
             $scope.config.placeholder = attrs.placeholder;
@@ -105,6 +110,16 @@
           if ($scope.config.disableNew) {
             $scope.selected = 0;
           }
+          if ($scope.config.single) {
+            if ($scope.value != null) {
+              $scope.tags = [$scope.value];
+            } else {
+              $scope.tags = [];
+            }
+          } else {
+            $scope.tags = $scope.value || [];
+          }
+          $scope.pos = $scope.tags.length;
           input = element.children().eq(1);
           _updateMatching = function() {
             var found, opt, rx, t, _j, _k, _len1, _len2, _ref1, _ref2;
@@ -223,7 +238,6 @@
           };
           $scope.handleOuterFocus = function($event) {
             var _ref1;
-            console.log(_currentInput());
             return (_ref1 = _currentInput()) != null ? typeof _ref1.focus === "function" ? _ref1.focus() : void 0 : void 0;
           };
           $scope.handleBlur = function($index, $event) {
@@ -239,8 +253,9 @@
             if (_overLimit()) {
               return;
             }
-            item = $scope.config.disableNew ? $scope.selected > -1 ? $scope.matching[$scope.selected] : null : $scope.selected === -1 && $scope.query ? $scope.query : $scope.selected > -1 ? $scope.matching[$scope.selected] : void 0;
+            item = $scope.config.disableNew ? $scope.selected > -1 ? $scope.matching[$scope.selected] : null : $scope.selected === -1 && $scope.query ? $scope.config.createFun($scope.query) : $scope.selected > -1 ? $scope.matching[$scope.selected] : void 0;
             if (item) {
+              console.log("adding ", item);
               $scope.tags.splice($scope.pos, 0, item);
               $scope.query = "";
               _updateMatching();
@@ -286,7 +301,13 @@
             }
           };
           _updateMatching();
-          return $scope.$watch("options", _updateMatching, true);
+          $scope.$watch("options", _updateMatching, true);
+          if ($scope.config.single) {
+            return $scope.$watch("tags", function() {
+              var _ref1;
+              return $scope.value = (_ref1 = $scope.tags) != null ? _ref1[0] : void 0;
+            }, true);
+          }
         }
       };
     }
