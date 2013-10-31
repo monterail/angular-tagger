@@ -10,7 +10,7 @@
       $scope.options = ["Text", "Markdown", "HTML", "PHP", "Python", "Java", "JavaScript", "Ruby", "VHDL", "Verilog", "C#", "C/C++"]
       $scope.tags = ["Markdown", "Ruby"]
 
-      $scope.font = []
+      $scope.font = null
       $scope.fonts = [
         {id: 1, name: "Lucida"},
         {id: 2, name: "DejaVu"},
@@ -27,6 +27,14 @@
         addOption: function() {
           $scope.empty.options.push(Math.random())
         }
+      }
+
+      $scope.selected = function(item){
+        console.log("SELECTED ", item)
+      }
+
+      $scope.foc = function(){
+        document.getElementById("s1").focus()
       }
     })
   </script>
@@ -51,8 +59,9 @@
     <tagger ng-model="tags" options="options" disable-new limit=3></tagger>
     <pre>{{ tags | json }}</pre>
 
-    single: <tagger ng-model="font" options="fonts" placeholder="Choose font" single disable-new display-fun="showName"></tagger>
+    single: <tagger tabindex="-1" id="s1" ng-model="font" options="fonts" placeholder="Choose font" single display-fun="showName" on-select="selected"></tagger>
     <pre>{{ font | json }}</pre>
+    <button ng-click='foc()'>Focus</button>
 
     <tagger ng-model="empty.value" options="empty.options" placeholder="Select something"></tagger>
     <pre>{{ empty | json }}</pre>

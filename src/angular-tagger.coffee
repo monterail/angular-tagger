@@ -35,7 +35,8 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
   <span
     class="angular-tagger"
     ng-click="handleOuterClick($event)"
-    ng-class="{'angular-tagger--single': config.single}">
+    ng-class="{'angular-tagger--single': config.single}"
+    ng-focus="handleOuterFocus($event)">
     <span class="angular-tagger__wrapper">
       <span class="angular-tagger__holder" ng-repeat="tag in tags">
         <span tagger-contenteditable="true"
@@ -129,6 +130,9 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     if attrs.single?
       $scope.config.single = true
       $scope.config.limit = 1
+
+    if attrs.onSelect?
+      $scope.config.onSelect = $scope.$parent.$eval(attrs.onSelect)
 
     if $scope.config.disableNew
       $scope.selected = 0
@@ -226,6 +230,10 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
       $scope.addItem()
       $event.stopPropagation()
 
+    $scope.handleOuterFocus = ($event) ->
+      console.log _currentInput()
+      _currentInput()?.focus?()
+
     $scope.handleBlur = ($index, $event) ->
       $scope.hide() if $index == $scope.pos && !mousedown
 
@@ -252,6 +260,8 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
         $scope.selected = Math.min($scope.selected, $scope.matching.length - 1)
         $scope.pos++
         _updateFocus()
+
+        $scope.config.onSelect?(item)
 
         $scope.hide() if _overLimit()
 
