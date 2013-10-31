@@ -76,7 +76,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
           ng-mouseup="handleMouseup()"
           ng-mouseover="selectItem(-1)"
           ng-click="handleItemClick($event)"
-          ng-hide="config.disableNew || !query.length"
+          ng-hide="config.disableNew || !query.length || hideNew"
           ng-class='{"angular-tagger__matching-item--selected": selected == -1}'>
           Add: {{ query }}...
         </li>
@@ -107,6 +107,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     $scope.options ||= []
     $scope.tags ||= []
     $scope.placeholder = null
+    $scope.hideNew = false
 
     $scope.config =
       disableNew: false
@@ -140,26 +141,19 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     if $scope.config.disableNew
       $scope.selected = 0
 
-    if $scope.config.single
-      if $scope.value?
-        $scope.tags = [$scope.value]
-      else
-        $scope.tags = []
-    else
-      $scope.tags = $scope.value || []
-
-    $scope.pos = $scope.tags.length
-
-
 
     input = element.children().eq(1)
 
     _updateMatching = () ->
       rx = new RegExp(".*#{$scope.query.split("").join(".*")}.*", "i")
 
+      $scope.hideNew = false
       $scope.matching = []
       for opt in $scope.options
-        if rx.test($scope.config.displayFun(opt))
+        str = $scope.config.displayFun(opt)
+        if rx.test(str)
+          $scope.hideNew = true if str.toLowerCase() == $scope.query.toLowerCase()
+
           found = false
           for t in $scope.tags
             if t == opt
@@ -276,7 +270,10 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
         $scope.pos++
         _updateFocus()
 
-        $scope.config.onSelect?(item)
+        if $scope.config.single
+          $scope.value = $scope.tags[0]
+
+        $timeout -> $scope.config.onSelect?(item)
 
         $scope.hide() if _overLimit()
 
@@ -295,6 +292,8 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     $scope.removeTag = (pos, $event) ->
       $event?.stopPropagation?()
       $scope.tags.splice(pos, 1)
+      if $scope.config.single
+          $scope.value = $scope.tags[0]
 
       if pos < $scope.pos
         $scope.pos--
@@ -303,14 +302,22 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
         _updateMatching()
         _updateFocus()
 
+      if $scope.config.single
+        $scope.value = $scope.tags[0]
 
     # bootstrap
     _updateMatching()
 
     $scope.$watch "options", _updateMatching, true
+    $scope.$watch "value", ->
+      if $scope.config.single
+        if $scope.value?
+          $scope.tags = [$scope.value]
+        else
+          $scope.tags = []
+      else
+        $scope.tags = $scope.value || []
 
-    if $scope.config.single
-      $scope.$watch "tags", ->
-        $scope.value = $scope.tags?[0]
-      , true
+      $scope.pos = $scope.tags.length
+    , true
 ]
