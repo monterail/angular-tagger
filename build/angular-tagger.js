@@ -113,33 +113,35 @@
           }
           input = element.children().eq(1);
           _updateMatching = function() {
-            var found, opt, rx, str, t, _j, _k, _len1, _len2, _ref1, _ref2;
-            rx = new RegExp(".*" + ($scope.query.split("").join(".*")) + ".*", "i");
-            $scope.hideNew = false;
-            $scope.matching = [];
-            _ref1 = $scope.options;
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              opt = _ref1[_j];
-              str = $scope.config.displayFun(opt);
-              if (rx.test(str)) {
-                if (str.toLowerCase() === $scope.query.toLowerCase()) {
-                  $scope.hideNew = true;
-                }
-                found = false;
-                _ref2 = $scope.tags;
-                for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-                  t = _ref2[_k];
-                  if (t === opt) {
-                    found = true;
+            return $timeout(function() {
+              var found, opt, rx, str, t, _j, _k, _len1, _len2, _ref1, _ref2;
+              rx = new RegExp(".*" + ($scope.query.split("").join(".*")) + ".*", "i");
+              $scope.hideNew = false;
+              $scope.matching = [];
+              _ref1 = $scope.options;
+              for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+                opt = _ref1[_j];
+                str = $scope.config.displayFun(opt);
+                if (rx.test(str)) {
+                  if (str.toLowerCase() === $scope.query.toLowerCase()) {
+                    $scope.hideNew = true;
+                  }
+                  found = false;
+                  _ref2 = $scope.tags;
+                  for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+                    t = _ref2[_k];
+                    if (t === opt) {
+                      found = true;
+                    }
+                  }
+                  if (!found) {
+                    $scope.matching.push(opt);
                   }
                 }
-                if (!found) {
-                  $scope.matching.push(opt);
-                }
               }
-            }
-            $scope.selected = $scope.config.disableNew ? 0 : $scope.matching.length > 0 ? 0 : -1;
-            return $scope.placeholder = $scope.tags.length > 0 ? null : $scope.config.placeholder;
+              $scope.selected = $scope.config.disableNew ? 0 : $scope.matching.length > 0 ? 0 : -1;
+              return $scope.placeholder = $scope.tags.length > 0 ? null : $scope.config.placeholder;
+            });
           };
           _updateFocus = function() {
             return $timeout(function() {

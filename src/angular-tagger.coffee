@@ -145,31 +145,32 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
     input = element.children().eq(1)
 
     _updateMatching = () ->
-      rx = new RegExp(".*#{$scope.query.split("").join(".*")}.*", "i")
+      $timeout ->
+        rx = new RegExp(".*#{$scope.query.split("").join(".*")}.*", "i")
 
-      $scope.hideNew = false
-      $scope.matching = []
-      for opt in $scope.options
-        str = $scope.config.displayFun(opt)
-        if rx.test(str)
-          $scope.hideNew = true if str.toLowerCase() == $scope.query.toLowerCase()
+        $scope.hideNew = false
+        $scope.matching = []
+        for opt in $scope.options
+          str = $scope.config.displayFun(opt)
+          if rx.test(str)
+            $scope.hideNew = true if str.toLowerCase() == $scope.query.toLowerCase()
 
-          found = false
-          for t in $scope.tags
-            if t == opt
-              found = true
+            found = false
+            for t in $scope.tags
+              if t == opt
+                found = true
 
-          $scope.matching.push opt unless found
+            $scope.matching.push opt unless found
 
-      $scope.selected = if $scope.config.disableNew
-        0
-      else
-        if $scope.matching.length > 0
+        $scope.selected = if $scope.config.disableNew
           0
         else
-          -1
+          if $scope.matching.length > 0
+            0
+          else
+            -1
 
-      $scope.placeholder = if $scope.tags.length > 0 then null else $scope.config.placeholder
+        $scope.placeholder = if $scope.tags.length > 0 then null else $scope.config.placeholder
 
     _updateFocus = () ->
       # focusing on hidden element does not work
