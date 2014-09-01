@@ -263,7 +263,6 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
         $scope.matching[$scope.selected]
 
       if item
-        console.log "adding ", item
         $scope.tags.splice $scope.pos, 0, item
         $scope.query = ""
         _updateMatching()
