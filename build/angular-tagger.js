@@ -3,29 +3,31 @@
 
   angular.module("tagger", []);
 
-  _ref = ["ngKeydown", "ngKeyup", "ngBlur", "ngFocus"];
-  _fn = function(directiveName) {
-    return angular.module("tagger").directive(directiveName, [
-      "$parse", function($parse) {
-        return function(scope, element, attr) {
-          var eventName, fn;
-          fn = $parse(attr[directiveName]);
-          eventName = directiveName.substring(2).toLowerCase();
-          return element.bind(eventName, function(event) {
-            fn(scope, {
-              $event: event
+  if (angular.version.major < 1 || angular.version.major === 1 && angular.version.minor < 3) {
+    _ref = ["ngKeydown", "ngKeyup", "ngBlur", "ngFocus"];
+    _fn = function(directiveName) {
+      return angular.module("tagger").directive(directiveName, [
+        "$parse", function($parse) {
+          return function(scope, element, attr) {
+            var eventName, fn;
+            fn = $parse(attr[directiveName]);
+            eventName = angular.lowercase(directiveName.substring(2));
+            return element.bind(eventName, function(event) {
+              fn(scope, {
+                $event: event
+              });
+              if (!(scope.$$phase || scope.$parent.$$phase || scope.$root.$$phase)) {
+                return scope.$apply();
+              }
             });
-            if (!(scope.$$phase || scope.$parent.$$phase || scope.$root.$$phase)) {
-              return scope.$apply();
-            }
-          });
-        };
-      }
-    ]);
-  };
-  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-    directiveName = _ref[_i];
-    _fn(directiveName);
+          };
+        }
+      ]);
+    };
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      directiveName = _ref[_i];
+      _fn(directiveName);
+    }
   }
 
   angular.module("tagger").directive("taggerContenteditable", function() {
@@ -60,7 +62,7 @@
       return {
         restrict: "AE",
         replace: true,
-        template: "<span\n  class=\"angular-tagger\"\n  ng-click=\"handleOuterClick($event)\"\n  ng-class=\"{'angular-tagger--single': config.single}\"\n  ng-focus=\"handleOuterFocus($event)\">\n  <span class=\"angular-tagger__wrapper\">\n    <span class=\"angular-tagger__holder\" ng-repeat=\"tag in tags\">\n      <span tagger-contenteditable=\"true\"\n        ng-model=\"$parent.query\"\n        ng-show=\"pos == $index\"\n        ng-keydown=\"handleKeyDown($event)\"\n        ng-keyup=\"handleKeyUp($event)\"\n        ng-click=\"handleInputClick($event)\"\n        ng-blur=\"handleBlur($index, $event)\"\n        class=\"angular-tagger__input\">\n      </span>\n      <span class=\"angular-tagger__tag\">\n        {{ config.displayFun(tag) }}\n        <span\n          class=\"angular-tagger-tag__delete\"\n          ng-mousedown=\"handleMousedown()\"\n          ng-mouseup=\"handleMouseup()\"\n          ng-click=\"removeTag($index, $event)\">x</span>\n      </span>\n    </span>\n  </span>\n  <span tagger-contenteditable=\"true\"\n    ng-model=\"query\"\n    ng-show=\"(config.single && !tags.length) || (!config.single && pos == tags.length)\"\n    ng-keydown=\"handleKeyDown($event)\"\n    ng-keyup=\"handleKeyUp($event)\"\n    ng-click=\"handleInputClick($event)\"\n    placeholder=\"{{ placeholder }}\"\n    ng-blur=\"handleBlur(tags.length, $event)\"\n    ng-focus=\"handleFocus($event)\"\n    class=\"angular-tagger__input\">\n  </span>\n  <div class=\"angular-tagger__hook\">\n    <ul ng-show=\"expanded\" class=\"angular-tagger__matching\">\n      <li class=\"angular-tagger__matching-item\"\n        ng-mousedown=\"handleMousedown()\"\n        ng-mouseup=\"handleMouseup()\"\n        ng-mouseover=\"selectItem(-1)\"\n        ng-click=\"handleItemClick($event)\"\n        ng-hide=\"config.disableNew || !query.length || hideNew\"\n        ng-class='{\"angular-tagger__matching-item--selected\": selected == -1}'>\n        Add: {{ query }}...\n      </li>\n      <li\n        ng-repeat=\"e in matching\"\n        ng-mousedown=\"handleMousedown()\"\n        ng-mouseup=\"handleMouseup()\"\n        ng-mouseover=\"selectItem($index)\"\n        ng-click=\"handleItemClick($event)\"\n        class=\"angular-tagger__matching-item\"\n        ng-class='{\"angular-tagger__matching-item--selected\": $index == selected}'>\n        {{ config.displayFun(e) }}\n      </li>\n    </ul>\n  </div>\n</span>",
+        template: "<span\n  class=\"angular-tagger\"\n  ng-click=\"handleOuterClick($event)\"\n  ng-class=\"{'angular-tagger--single': config.single}\"\n  ng-focus=\"handleOuterFocus($event)\">\n  <span class=\"angular-tagger__wrapper\">\n    <span class=\"angular-tagger__holder\" ng-repeat=\"tag in tags\">\n      <span tagger-contenteditable=\"true\"\n        ng-model=\"$parent.query\"\n        ng-show=\"pos == $index\"\n        ng-keydown=\"handleKeyDown($event)\"\n        ng-keyup=\"handleKeyUp($event)\"\n        ng-click=\"handleInputClick($event)\"\n        ng-blur=\"handleBlur($index, $event)\"\n        class=\"angular-tagger__input\">\n      </span>\n      <span class=\"angular-tagger__tag\">\n        {{ config.displayFun(tag) }}\n        <span\n          class=\"angular-tagger-tag__delete\"\n          ng-mousedown=\"handleMousedown()\"\n          ng-mouseup=\"handleMouseup()\"\n          ng-click=\"removeTag($index, $event)\">x</span>\n      </span>\n    </span>\n  </span>\n  <span tagger-contenteditable=\"true\"\n    ng-model=\"query\"\n    ng-show=\"(config.single && !tags.length) || (!config.single && pos == tags.length)\"\n    ng-keydown=\"handleKeyDown($event)\"\n    ng-keyup=\"handleKeyUp($event)\"\n    ng-click=\"handleInputClick($event)\"\n    placeholder=\"{{ placeholder }}\"\n    ng-blur=\"handleBlur(tags.length, $event)\"\n    ng-focus=\"handleFocus($event)\"\n    class=\"angular-tagger__input\">\n  </span>\n  <div class=\"angular-tagger__hook\">\n    <ul ng-show=\"expanded\" class=\"angular-tagger__matching\">\n      <li class=\"angular-tagger__matching-item\"\n        ng-mousedown=\"handleMousedown()\"\n        ng-mouseup=\"handleMouseup()\"\n        ng-mouseover=\"selectItem(-1)\"\n        ng-click=\"handleItemClick($event)\"\n        ng-hide=\"config.disableNew || !query.length || hideNew || tags.indexOf(query) != -1 \"\n        ng-class='{\"angular-tagger__matching-item--selected\": selected == -1}'>\n        Add: {{ query }}...\n      </li>\n      <li\n        ng-repeat=\"e in matching\"\n        ng-mousedown=\"handleMousedown()\"\n        ng-mouseup=\"handleMouseup()\"\n        ng-mouseover=\"selectItem($index)\"\n        ng-click=\"handleItemClick($event)\"\n        class=\"angular-tagger__matching-item\"\n        ng-class='{\"angular-tagger__matching-item--selected\": $index == selected}'>\n        {{ config.displayFun(e) }}\n      </li>\n    </ul>\n  </div>\n</span>",
         scope: {
           value: "=ngModel",
           options: "="
@@ -123,7 +125,7 @@
                 opt = _ref1[_j];
                 str = $scope.config.displayFun(opt);
                 if (rx.test(str)) {
-                  if (str.toLowerCase() === $scope.query.toLowerCase()) {
+                  if (angular.lowercase(str) === angular.lowercase($scope.query)) {
                     $scope.hideNew = true;
                   }
                   found = false;
@@ -252,7 +254,7 @@
               return;
             }
             item = $scope.config.disableNew ? $scope.selected > -1 ? $scope.matching[$scope.selected] : null : $scope.selected === -1 && $scope.query ? $scope.config.createFun($scope.query) : $scope.selected > -1 ? $scope.matching[$scope.selected] : void 0;
-            if (item) {
+            if ($scope.tags.indexOf(item) === -1) {
               console.log("adding ", item);
               $scope.tags.splice($scope.pos, 0, item);
               $scope.query = "";

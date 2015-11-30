@@ -2,16 +2,17 @@ angular.module "tagger", []
 
 # Angular 1.0.x polyfill for ng-keyup ng-keydown
 # Stolen from https://github.com/angular/angular.js/blob/2bb27d4998805fd89db25192f53d26d259ae615f/src/ng/directive/ngEventDirs.js
-for directiveName in ["ngKeydown", "ngKeyup", "ngBlur", "ngFocus"]
-  do (directiveName) ->
-    angular.module("tagger").directive directiveName, ["$parse", ($parse) ->
-      (scope, element, attr) ->
-        fn = $parse(attr[directiveName])
-        eventName = directiveName.substring(2).toLowerCase()
-        element.bind eventName, (event) ->
-          fn(scope, {$event: event})
-          scope.$apply() unless scope.$$phase || scope.$parent.$$phase || scope.$root.$$phase
-    ]
+if(angular.version.major < 1 || angular.version.major == 1 && angular.version.minor < 3)
+  for directiveName in ["ngKeydown", "ngKeyup", "ngBlur", "ngFocus"]
+    do (directiveName) ->
+      angular.module("tagger").directive directiveName, ["$parse", ($parse) ->
+        (scope, element, attr) ->
+          fn = $parse(attr[directiveName])
+          eventName = angular.lowercase(directiveName.substring(2))
+          element.bind eventName, (event) ->
+            fn(scope, {$event: event})
+            scope.$apply() unless scope.$$phase || scope.$parent.$$phase || scope.$root.$$phase
+      ]
 
 angular.module("tagger").directive "taggerContenteditable", ->
   require: "ngModel"
@@ -76,7 +77,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
           ng-mouseup="handleMouseup()"
           ng-mouseover="selectItem(-1)"
           ng-click="handleItemClick($event)"
-          ng-hide="config.disableNew || !query.length || hideNew"
+          ng-hide="config.disableNew || !query.length || hideNew || tags.indexOf(query) != -1 "
           ng-class='{"angular-tagger__matching-item--selected": selected == -1}'>
           Add: {{ query }}...
         </li>
@@ -153,7 +154,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
         for opt in $scope.options
           str = $scope.config.displayFun(opt)
           if rx.test(str)
-            $scope.hideNew = true if str.toLowerCase() == $scope.query.toLowerCase()
+            $scope.hideNew = true if angular.lowercase(str)== angular.lowercase($scope.query)
 
             found = false
             for t in $scope.tags
@@ -261,8 +262,7 @@ angular.module("tagger").directive "tagger", ["$compile", "$timeout", ($compile,
         $scope.config.createFun($scope.query)
       else if $scope.selected > -1
         $scope.matching[$scope.selected]
-
-      if item
+      if($scope.tags.indexOf(item) == -1)
         console.log "adding ", item
         $scope.tags.splice $scope.pos, 0, item
         $scope.query = ""
