@@ -12,7 +12,7 @@
     "build/angular-tagger.css"
   ],
   "dependencies": {
-    "angular": "~1.4.8"
+    "angular": "~1.0.7"
   },
   "license": "MIT",
   "homepage": "http://github.com/monterail/angular-tagger"
