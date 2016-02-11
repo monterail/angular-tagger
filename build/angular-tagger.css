@@ -7,17 +7,20 @@
 }
 .angular-tagger__holder {
   display: inline-block;
+  max-width: inherit;
 }
 .angular-tagger__wrapper {
   vertical-align: middle;
+  max-width: inherit;
 }
 .angular-tagger__tag {
   background: #571e93;
   padding: 5px;
   margin: 1px;
-  display: inline-block;
+  display: block;
   color: white;
   border-radius: 2px;
+  word-wrap: break-word;
 }
 .angular-tagger-tag__delete {
   cursor: pointer;
@@ -31,8 +34,10 @@
   display: inline-block;
   height: 20px;
   line-height: 20px;
-  padding: 1px 0 1px 3px;
+  padding: 1px 0;
   vertical-align: middle;
+  word-wrap: break-word;
+  max-width: inherit;
 }
 .angular-tagger__input:empty:not(:focus):before {
   content: attr(placeholder);
@@ -59,6 +64,7 @@
   list-style: none;
   padding: 3px 5px;
   background: #fff;
+  word-wrap: break-word;
 }
 .angular-tagger__matching-item:hover {
   cursor: pointer;
