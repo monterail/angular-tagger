@@ -25,7 +25,7 @@ Attribute name  | Description
 `display-fun`   | Function for formatting value. <br/> Example: `<tagger ng-model="tags" display-fun="showName">`
 `placeholder`   | Placeholder string. <br/> Example: `<tagger ng-model="tags" placeholder="Select something">`
 `single`        | Make it a single select with slightly different behavior. <br/> Example: `<tagger ng-model="tags" single>`
-
+`reload-options`| Function for updating the options values using external query. <br/> Example: `<tagger ng-model="tags" options="options" reload-options="find" ></tagger>`
 
 ## Development
 

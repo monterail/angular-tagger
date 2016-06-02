@@ -9,6 +9,7 @@
     angular.module("testapp").controller("TestCtrl", function($scope){
       $scope.options = ["Text", "Markdown", "HTML", "PHP", "Python", "Java", "JavaScript", "Ruby", "VHDL", "Verilog", "C#", "C/C++"]
       $scope.tags = ["Markdown", "Ruby"]
+      var serverData = $scope.options.promise;
 
       $scope.font = null
       $scope.fonts = [
@@ -39,6 +40,17 @@
       $scope.foc = function(){
         document.getElementById("s1").focus()
       }
+      
+      $scope.like = function(text){
+        var data = [];
+        for(var opt in $scope.options){
+          if (opt.match("/"+ text+ ".*")){
+              data.push(opt)
+          }
+        }
+        return data;
+      }
+      
     })
   </script>
   <link rel="stylesheet" type="text/css" href="../build/angular-tagger.css"/>
@@ -69,6 +81,8 @@
 
     <tagger ng-model="empty.value" options="empty.options" placeholder="Select something"></tagger>
     <pre>{{ empty | json }}</pre>
+      
+    <tagger ng-model="tags" options="options" reload-options="find" ></tagger>
 
     <button ng-click="empty.addOption()">Add option</button>
   </div>
