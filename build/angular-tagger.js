@@ -105,6 +105,9 @@
           if (attrs.beforeRemove != null && attrs.beforeRemove != undefined) {
             $scope.config.beforeRemove = $scope.$parent.$eval(attrs.beforeRemove);
           }
+          if (attrs.afterRemove != null && attrs.afterRemove != undefined) {
+            $scope.config.afterRemove = $scope.$parent.$eval(attrs.afterRemove);
+          }
           /* [AS] end */
           if (attrs.createFun != null) {
             $scope.config.createFun = $scope.$parent.$eval(attrs.createFun);
@@ -312,13 +315,14 @@
                 $event.stopPropagation();
               }
             }
-
-            console.log('[AS] removeTag pos:' +pos +' item:' + $scope.tags[pos]);
+            console.log('[AS] removeTag pos:' +pos);
             if ($scope.config.beforeRemove != null && $scope.config.beforeRemove != undefined) {
               $scope.config.beforeRemove($scope.tags[pos]);
             }
-
             $scope.tags.splice(pos, 1);
+            if ($scope.config.afterRemove != null && $scope.config.afterRemove != undefined) {
+              $scope.config.afterRemove($scope.tags[pos]);
+            }
             if ($scope.config.single) {
               $scope.value = $scope.tags[0];
             }
