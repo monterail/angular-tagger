@@ -26,6 +26,8 @@ Attribute name  | Description
 `placeholder`   | Placeholder string. <br/> Example: `<tagger ng-model="tags" placeholder="Select something">`
 `single`        | Make it a single select with slightly different behavior. <br/> Example: `<tagger ng-model="tags" single>`
 `reload-options`| Function for updating the options values using external query. <br/> Example: `<tagger ng-model="tags" options="options" reload-options="find" ></tagger>`
+`before-remove` | Recive a method. It's called with the item like parameter before removed it. <br/> Example: `<tagger ng-model="tags" options="options" before-remove="onBeforeRemoveItem" ></tagger>`
+`after-remove` | Recive a method. It's called with the item is removed from array. <br/> Example: `<tagger ng-model="tags" options="options" after-remove="onAfterRemoveItem" ></tagger>`
 
 ## Development
 
