@@ -1,18 +1,19 @@
-(function() {
+(function () {
   var directiveName, _fn, _i, _len, _ref;
 
   angular.module("tagger", []);
 
   if (angular.version.major < 1 || angular.version.major === 1 && angular.version.minor < 3) {
     _ref = ["ngKeydown", "ngKeyup", "ngBlur", "ngFocus"];
-    _fn = function(directiveName) {
+    _fn = function (directiveName) {
       return angular.module("tagger").directive(directiveName, [
-        "$parse", function($parse) {
-          return function(scope, element, attr) {
+        "$parse",
+                function ($parse) {
+          return function (scope, element, attr) {
             var eventName, fn;
             fn = $parse(attr[directiveName]);
             eventName = angular.lowercase(directiveName.substring(2));
-            return element.bind(eventName, function(event) {
+            return element.bind(eventName, function (event) {
               fn(scope, {
                 $event: event
               });
@@ -30,16 +31,16 @@
     }
   }
 
-  angular.module("tagger").directive("taggerContenteditable", function() {
+  angular.module("tagger").directive("taggerContenteditable", function () {
     return {
       require: "ngModel",
-      link: function(scope, elm, attrs, ctrl) {
+      link: function (scope, elm, attrs, ctrl) {
         var update;
         elm.attr("contenteditable", true);
-        ctrl.$render = function() {
+        ctrl.$render = function () {
           return elm.text(ctrl.$viewValue);
         };
-        update = function($event) {
+        update = function ($event) {
           if ($event.keyCode === 13) {
             if ($event != null) {
               if (typeof $event.preventDefault === "function") {
@@ -47,7 +48,7 @@
               }
             }
           }
-          return scope.$apply(function() {
+          return scope.$apply(function () {
             return ctrl.$setViewValue(elm.text());
           });
         };
@@ -58,16 +59,17 @@
   });
 
   angular.module("tagger").directive("tagger", [
-    "$compile", "$timeout", function($compile, $timeout) {
+    "$compile", "$timeout",
+        function ($compile, $timeout) {
       return {
         restrict: "AE",
         replace: true,
-        template: "<span\n  class=\"angular-tagger\"\n  ng-click=\"handleOuterClick($event)\"\n  ng-class=\"{'angular-tagger--single': config.single}\"\n  ng-focus=\"handleOuterFocus($event)\">\n  <span class=\"angular-tagger__wrapper\">\n    <span class=\"angular-tagger__holder\" ng-repeat=\"tag in tags\">\n      <span tagger-contenteditable=\"true\"\n        ng-model=\"$parent.query\"\n        ng-show=\"pos == $index\"\n        ng-keydown=\"handleKeyDown($event)\"\n        ng-keyup=\"handleKeyUp($event)\"\n        ng-click=\"handleInputClick($event)\"\n        ng-blur=\"handleBlur($index, $event)\"\n        class=\"angular-tagger__input\">\n      </span>\n      <span class=\"angular-tagger__tag\">\n        {{ config.displayFun(tag) }}\n        <span\n          class=\"angular-tagger-tag__delete\"\n          ng-mousedown=\"handleMousedown()\"\n          ng-mouseup=\"handleMouseup()\"\n          ng-click=\"removeTag($index, $event)\">x</span>\n      </span>\n    </span>\n  </span>\n  <span tagger-contenteditable=\"true\"\n    ng-model=\"query\"\n    ng-show=\"(config.single && !tags.length) || (!config.single && pos == tags.length)\"\n    ng-keydown=\"handleKeyDown($event)\"\n    ng-keyup=\"handleKeyUp($event)\"\n    ng-click=\"handleInputClick($event)\"\n    placeholder=\"{{ placeholder }}\"\n    ng-blur=\"handleBlur(tags.length, $event)\"\n    ng-focus=\"handleFocus($event)\"\n    class=\"angular-tagger__input\">\n  </span>\n  <div class=\"angular-tagger__hook\">\n    <ul ng-show=\"expanded\" class=\"angular-tagger__matching\">\n      <li class=\"angular-tagger__matching-item\"\n        ng-mousedown=\"handleMousedown()\"\n        ng-mouseup=\"handleMouseup()\"\n        ng-mouseover=\"selectItem(-1)\"\n        ng-click=\"handleItemClick($event)\"\n        ng-hide=\"config.disableNew || !query.length || hideNew || tags.indexOf(query) != -1 \"\n        ng-class='{\"angular-tagger__matching-item--selected\": selected == -1}'>\n        Add: {{ query }}...\n      </li>\n      <li\n        ng-repeat=\"e in matching\"\n        ng-mousedown=\"handleMousedown()\"\n        ng-mouseup=\"handleMouseup()\"\n        ng-mouseover=\"selectItem($index)\"\n        ng-click=\"handleItemClick($event)\"\n        class=\"angular-tagger__matching-item\"\n        ng-class='{\"angular-tagger__matching-item--selected\": $index == selected}'>\n        {{ config.displayFun(e) }}\n      </li>\n    </ul>\n  </div>\n</span>",
+        template: "<span\n  class=\"angular-tagger\"\n  ng-click=\"handleOuterClick($event)\"\n  ng-class=\"{'angular-tagger--single': config.single}\"\n  ng-focus=\"handleOuterFocus($event)\">\n  <span class=\"angular-tagger__wrapper\">\n    <span class=\"angular-tagger__holder\" ng-repeat=\"tag in tags\">\n      <span tagger-contenteditable=\"true\"\n        ng-model=\"$parent.query\"\n        ng-show=\"pos == $index\"\n        ng-keydown=\"handleKeyDown($event)\"\n        ng-keyup=\"handleKeyUp($event)\"\n        ng-click=\"handleInputClick($event)\"\n        ng-blur=\"handleBlur($index, $event)\"\n        class=\"angular-tagger__input\">\n      </span>\n      <span class=\"angular-tagger__tag\">\n        {{ config.displayFun(tag) }}\n        <span\n          class=\"angular-tagger-tag__delete\"\n          ng-mousedown=\"handleMousedown()\"\n          ng-mouseup=\"handleMouseup()\"\n          ng-click=\"removeTag($index, $event)\">✖</span>\n      </span>\n    </span>\n  </span>\n  <span tagger-contenteditable=\"true\"\n    ng-model=\"query\"\n    ng-show=\"(config.single && !tags.length) || (!config.single && pos == tags.length)\"\n    ng-keydown=\"handleKeyDown($event)\"\n    ng-keyup=\"handleKeyUp($event)\"\n    ng-click=\"handleInputClick($event)\"\n    placeholder=\"{{ placeholder }}\"\n    ng-blur=\"handleBlur(tags.length, $event)\"\n    ng-focus=\"handleFocus($event)\"\n    class=\"angular-tagger__input\">\n  </span>\n  <div class=\"angular-tagger__hook\">\n    <ul ng-show=\"expanded\" class=\"angular-tagger__matching\">\n      <li class=\"angular-tagger__matching-item\"\n        ng-mousedown=\"handleMousedown()\"\n        ng-mouseup=\"handleMouseup()\"\n        ng-mouseover=\"selectItem(-1)\"\n        ng-click=\"handleItemClick($event)\"\n        ng-hide=\"config.disableNew || !query.length || hideNew || tags.indexOf(query) != -1 \"\n        ng-class='{\"angular-tagger__matching-item--selected\": selected == -1}'>\n        Add: {{ query }}...\n      </li>\n      <li\n        ng-repeat=\"e in matching\"\n        ng-mousedown=\"handleMousedown()\"\n        ng-mouseup=\"handleMouseup()\"\n        ng-mouseover=\"selectItem($index)\"\n        ng-click=\"handleItemClick($event)\"\n        class=\"angular-tagger__matching-item\"\n        ng-class='{\"angular-tagger__matching-item--selected\": $index == selected}'>\n        {{ config.displayFun(e) }}\n      </li>\n    </ul>\n  </div>\n</span>",
         scope: {
           value: "=ngModel",
           options: "="
         },
-        link: function($scope, element, attrs) {
+        link: function ($scope, element, attrs) {
           var input, mousedown, _currentInput, _overLimit, _updateFocus, _updateMatching;
           $scope.query = "";
           $scope.expanded = false;
@@ -79,10 +81,10 @@
           $scope.hideNew = false;
           $scope.config = {
             disableNew: false,
-            displayFun: (function(e) {
+            displayFun: (function (e) {
               return e;
             }),
-            createFun: (function(e) {
+            createFun: (function (e) {
               return e;
             }),
             limit: null
@@ -96,6 +98,17 @@
           if (attrs.displayFun != null) {
             $scope.config.displayFun = $scope.$parent.$eval(attrs.displayFun);
           }
+          /* [AS] begin */
+          if (attrs.reloadOptions != null && attrs.reloadOptions != undefined) {
+            $scope.config.reloadOptions = $scope.$parent.$eval(attrs.reloadOptions);
+          }
+          if (attrs.beforeRemove != null && attrs.beforeRemove != undefined) {
+            $scope.config.beforeRemove = $scope.$parent.$eval(attrs.beforeRemove);
+          }
+          if (attrs.afterRemove != null && attrs.afterRemove != undefined) {
+            $scope.config.afterRemove = $scope.$parent.$eval(attrs.afterRemove);
+          }
+          /* [AS] end */
           if (attrs.createFun != null) {
             $scope.config.createFun = $scope.$parent.$eval(attrs.createFun);
           }
@@ -114,8 +127,11 @@
             $scope.selected = 0;
           }
           input = element.children().eq(1);
-          _updateMatching = function() {
-            return $timeout(function() {
+          _updateMatching = function () {
+            return $timeout(function () {
+              if ($scope.query.length > 2 && $scope.config.reloadOptions != undefined) {
+                $scope.config.reloadOptions($scope.query);
+              }
               var found, opt, rx, str, t, _j, _k, _len1, _len2, _ref1, _ref2;
               rx = new RegExp(".*" + ($scope.query.split("").join(".*")) + ".*", "i");
               $scope.hideNew = false;
@@ -145,23 +161,23 @@
               return $scope.placeholder = $scope.tags.length > 0 ? null : $scope.config.placeholder;
             });
           };
-          _updateFocus = function() {
-            return $timeout(function() {
+          _updateFocus = function () {
+            return $timeout(function () {
               _currentInput().focus();
               return $scope.show();
             });
           };
-          _currentInput = function() {
+          _currentInput = function () {
             if ($scope.pos === $scope.tags.length) {
               return input[0];
             } else {
               return element.children().eq(0).children().eq($scope.pos).children()[0];
             }
           };
-          _overLimit = function() {
+          _overLimit = function () {
             return $scope.config.limit && $scope.tags.length >= $scope.config.limit;
           };
-          $scope.handleOuterClick = function($event) {
+          $scope.handleOuterClick = function ($event) {
             if ($event != null) {
               if (typeof $event.stopPropagation === "function") {
                 $event.stopPropagation();
@@ -174,13 +190,13 @@
             return _updateFocus();
           };
           mousedown = false;
-          $scope.handleMousedown = function() {
+          $scope.handleMousedown = function () {
             return mousedown = true;
           };
-          $scope.handleMouseup = function() {
+          $scope.handleMouseup = function () {
             return mousedown = false;
           };
-          $scope.handleKeyUp = function($event) {
+          $scope.handleKeyUp = function ($event) {
             var _ref1;
             switch ($event.keyCode) {
               case 8:
@@ -196,7 +212,7 @@
                 }
             }
           };
-          $scope.handleKeyDown = function($event) {
+          $scope.handleKeyDown = function ($event) {
             switch ($event.keyCode) {
               case 38:
                 $scope.selected = Math.max($scope.selected - 1, $scope.config.disableNew ? 0 : -1);
@@ -229,31 +245,35 @@
                 }
             }
           };
-          $scope.handleInputClick = function($event) {
+          $scope.handleInputClick = function ($event) {
             return $event.stopPropagation();
           };
-          $scope.handleItemClick = function($event) {
+          $scope.handleItemClick = function ($event) {
             $scope.addItem();
             return $event.stopPropagation();
           };
-          $scope.handleOuterFocus = function($event) {
+          $scope.handleOuterFocus = function ($event) {
             var _ref1;
-            return (_ref1 = _currentInput()) != null ? typeof _ref1.focus === "function" ? _ref1.focus() : void 0 : void 0;
+            return (_ref1 = _currentInput()) != null ? typeof _ref1.iffocus === "function" ? _ref1.focus() : void 0 : void 0;
           };
-          $scope.handleBlur = function($index, $event) {
+          $scope.handleBlur = function ($index, $event) {
             if ($index === $scope.pos && !mousedown) {
               return $scope.hide();
             }
           };
-          $scope.handleFocus = function($event) {
+          $scope.handleFocus = function ($event) {
             return $scope.show();
           };
-          $scope.addItem = function() {
+          $scope.addItem = function () {
             var item;
             if (_overLimit()) {
               return;
             }
             item = $scope.config.disableNew ? $scope.selected > -1 ? $scope.matching[$scope.selected] : null : $scope.selected === -1 && $scope.query ? $scope.config.createFun($scope.query) : $scope.selected > -1 ? $scope.matching[$scope.selected] : void 0;
+            if ($scope.tags.length == undefined) {
+              $scope.tags = [];
+              $scope.pos = 0;
+            }
             if ($scope.tags.indexOf(item) === -1) {
               console.log("adding ", item);
               $scope.tags.splice($scope.pos, 0, item);
@@ -265,7 +285,7 @@
               if ($scope.config.single) {
                 $scope.value = $scope.tags[0];
               }
-              $timeout(function() {
+              $timeout(function () {
                 var _base;
                 return typeof (_base = $scope.config).onSelect === "function" ? _base.onSelect(item) : void 0;
               });
@@ -274,28 +294,35 @@
               }
             }
           };
-          $scope.selectItem = function(index) {
+          $scope.selectItem = function (index) {
             return $scope.selected = index;
           };
-          $scope.show = function() {
+          $scope.show = function () {
             return $scope.expanded = !_overLimit();
           };
-          $scope.hide = function() {
+          $scope.hide = function () {
             $scope.expanded = false;
             $scope.query = "";
             $scope.pos = $scope.tags.length;
-            return $timeout(function() {
+            return $timeout(function () {
               var _ref1;
               return (_ref1 = _currentInput()) != null ? typeof _ref1.blur === "function" ? _ref1.blur() : void 0 : void 0;
             });
           };
-          $scope.removeTag = function(pos, $event) {
+          $scope.removeTag = function (pos, $event) {
             if ($event != null) {
               if (typeof $event.stopPropagation === "function") {
                 $event.stopPropagation();
               }
             }
+            console.log('[AS] removeTag pos:' +pos);
+            if ($scope.config.beforeRemove != null && $scope.config.beforeRemove != undefined) {
+              $scope.config.beforeRemove($scope.tags[pos]);
+            }
             $scope.tags.splice(pos, 1);
+            if ($scope.config.afterRemove != null && $scope.config.afterRemove != undefined) {
+              $scope.config.afterRemove($scope.tags[pos]);
+            }
             if ($scope.config.single) {
               $scope.value = $scope.tags[0];
             }
@@ -312,7 +339,7 @@
           };
           _updateMatching();
           $scope.$watch("options", _updateMatching, true);
-          return $scope.$watch("value", function() {
+          return $scope.$watch("value", function () {
             if ($scope.config.single) {
               if ($scope.value != null) {
                 $scope.tags = [$scope.value];
